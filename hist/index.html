@@ -70,6 +70,10 @@ h1, h2 {
   text-rendering: optimizeLegibility;
 }
 
+#body {
+  width: 750px;
+}
+
 #body > p {
   line-height: 1.5em;
   width: 640px;
@@ -137,15 +141,15 @@ h1, h2 {
 }
 
 #fill-temp-chart {
-  width: 820px;
+  width: 660px;
 }
 
 #fill-press-chart {
-  width: 822px;
+  width: 670px;
 }
 
 #date-chart {
-  width: 920px;
+  width: 560px;
 }
 
 #dataPoint-list {
@@ -160,12 +164,13 @@ h1, h2 {
 #dataPoint-list .dataPoint {
   line-height: 1.5em;
   background: #eee;
-  width: 780px;
+  width: 750px;
   margin-bottom: 1px;
 }
 
 #dataPoint-list .time {
   color: #999;
+  width: 70px;
 }
 
 #dataPoint-list .dataPoint div {
@@ -180,7 +185,7 @@ h1, h2 {
 }
 
 #dataPoint-list div.fillamount {
-  width: 90px;
+  width: 70px;
   padding-right: 10px;
   text-align: right;
 }
@@ -210,7 +215,7 @@ h1, h2 {
 
 aside {
   position: relative;
-  left: 740px;
+  left: 540px;
   font-size: smaller;
   width: 220px;
 }
@@ -400,7 +405,7 @@ d3.csv("data_out_filtered.csv", function(error, allRawData) {
   // Chart 4
   var chart4_DomainMin = 0,
 	  chart4_DomainMax = 5,
-	  chart4_binSize = 0.2,
+	  chart4_binSize = 0.1,
 	  chart4_numOfBins = (chart4_DomainMax - chart4_DomainMin) / chart4_binSize;
 	  
   // Chart 5
@@ -412,13 +417,13 @@ d3.csv("data_out_filtered.csv", function(error, allRawData) {
   // Chart 6
   var chart6_DomainMin = -20,
 	  chart6_DomainMax = 60,  
-	  chart6_binSize = 1,
+	  chart6_binSize = 1.25,
 	  chart6_numOfBins = (chart6_DomainMax - chart6_DomainMin)/chart6_binSize;
 	  
   // Chart 7
   var chart7_DomainMin = -10,
 	  chart7_DomainMax = 800,  
-	  chart7_binSize = 10,
+	  chart7_binSize = 12.5,
 	  chart7_numOfBins = (chart7_DomainMax - chart7_DomainMin) / chart7_binSize;
 	  
 
