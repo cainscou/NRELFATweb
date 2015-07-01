@@ -18,10 +18,10 @@
       			{"name": "Copper", "size": 3}
       			]},
       		{"name": "Gauges", "size": 10},
-      		{"name": "Exploding Head", "size": 500},
-      		{"name": "Hydraulic Spazz", "size": 5}
+      		{"name": "cracked Head", "size": 500},
+      		{"name": "Hydraulic leak", "size": 5}
       	]},
-      {"name": "Exploding Shrapnel", "size": 500}
+      {"name": "cracked part", "size": 500}
      ]
     },
     {
