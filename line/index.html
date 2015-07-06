@@ -11,17 +11,15 @@
 <meta name="description" content="NREL Interactive Web Graphics Template" />
 <meta name="author" content="U.S. Department of Energy, National Renewable Energy Lab" />
 
-
 <!-- Helps compatibility with IE 8 and earlier -->
 <!--[if lt IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.js"></script>
 <![endif
 
-
 <!-- MAIN NREL STYLESHEET -->
 <link rel="stylesheet" type="text/css" href="http://www.nrel.gov/includes/nrel.css" />
 
-
+<!-- Local Styles for this WebPage -->
 <style>
 
 svg {
@@ -53,40 +51,44 @@ noscript {
 }
 
 </style>
-</head>
 
-
+</head>  
 <body>
 
+<!-- WEBPAGE HTML AND TEXT INFORMATION -->
 <!-- Information displayed above the charts -->
-<h2>S&P 500 Price vs. Time - Example Data Set</h2>
+<h2>S&P 500 Price vs. Time - Example Data Set For Template</h2>
 
 <p>This graph represents the S%P500 over time, and the format will eventually become a template for NREL hydrogen data - Add additional description about the dataset here. </p>
 
 <p><b>Instructions for Interactive Graphics:</b> <br /> <i> Click and drag on the lower graph to select the data range for the upper graph. <br /> This allows you to apply your own custom data filters and criteria!</i></p>
 
 <!-- Additional spacing between text and graph -->
-<p> <br />  <br /> </p>
+<p> <br /> <br /> </p>
+
+<!-- Added this section in case JavaScript is not enabled on users web browser -->
+<noscript><br />Sorry, JavaScript is either not enabled, or is not supported by your web browser.  <br />
+		  Scripts must be enabled to see the interactive data visualizations on this page. <hr /> </noscript>
+			   
+<!-- D3 CHART LOCATION - D3 APPENDS CHART ELEMENTS INTO THIS DIV -->
+<div id="charts"></div>
 
 
-<!-- D3 APPENDS CHART ELEMENTS INTO HERE -->
-<div id="charts"> </div>
+<!-- WEBAGE JAVASCRIPTS -->
 
 <!-- Load the d3 Library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-
 <!-- Load JQuery - Not currently in use -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
-
-<!-- MAIN WEBPAGE SCRIPT -->
+<!-- Main WebPage Script -->
 <script>
 
-
-// AJAX CALL FOR DATA DOWNLOAD, AND ADDING DATA INTO THE CHART
+// AJAX CALL FOR DATA DOWNLOAD, AND ADDING DATA INTO THE CHART:
 // While the data is downloading, the next block of code after the d3.csv command will 
 // execute.  Then, when all data has downloaded, the code inside the function passed 
 // as an argument to d3.csv will execute.
+
 d3.csv("sp500.csv", type, function(error, data) {
   // defines the domain of the data on each chart scale
   x.domain(d3.extent(data.map(function(d) { return d.date; })));
@@ -111,19 +113,19 @@ d3.csv("sp500.csv", type, function(error, data) {
       .attr("class", "y axis")
       .call(yAxis);
 
-  // Draw the data curve into the lower subchart with brush filter
+  // Draw the data curve into the lower sub chart with brush filter
   context.append("path")
       .datum(data)
       .attr("class", "area")
       .attr("d", area2);
 
-  // Draw the x-axis onto the lower subchart with brush filters
+  // Draw the x-axis onto the lower sub chart with brush filters
   context.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height2 + ")")
       .call(xAxis2);
 
-  // Adds the interactive brush into the lower subchart so data can be filtered
+  // Adds the interactive brush into the lower sub chart so data can be filtered
   context.append("g")
       .attr("class", "x brush")
       .call(brush)
@@ -133,7 +135,7 @@ d3.csv("sp500.csv", type, function(error, data) {
 }); // end of d3.csv asynchronous call
 
 
-// THIS SECTION INITIALIZES VARIABLES THAT DEFINE THE CHART 
+// THIS SECTION INITIALIZES VARIABLES THAT DEFINE THE CHART:
 // This runs immediately after the data download in d3.csv begins
 
 // Defines chart dimensions
@@ -169,7 +171,7 @@ var area = d3.svg.area()
     .y0(height)
     .y1(function(d) { return y(d.price); });
 
-// Define function to construct curve on lower subchart w brush filter
+// Define function to construct curve on lower sub chart w brush filter
 var area2 = d3.svg.area()
     .interpolate("monotone")
     .x(function(d) { return x2(d.date); })
@@ -178,7 +180,7 @@ var area2 = d3.svg.area()
 
 	
 	
-// THIS SECTION BEGINS CONSTRUCTING A SKELETON FOR THE CHART.
+// THIS SECTION BEGINS CONSTRUCTING A SKELETON FOR THE CHART:
 // The skeleton will be filled in once the rest of the data loads.
 
 // Creates SVG graphic of appropriate size
@@ -186,7 +188,7 @@ var svg = d3.select("#charts").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom);
 
-// Append clippath
+// Append clipPath
 svg.append("defs").append("clipPath")
     .attr("id", "clip")
   .append("rect")
@@ -198,14 +200,14 @@ var focus = svg.append("g")
     .attr("class", "focus")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-// Append g tag to define lower subchart chart with filters.
+// Append g tag to define lower sub chart chart with filters.
 var context = svg.append("g")
     .attr("class", "context")
     .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 	
 	
 
-// SUB-FUNCTION DEFINITIONS
+// SUB-FUNCTION DEFINITIONS:
 // This function executes when the brush is used to redefine the x-axis scale.
 function brushed() {
   x.domain(brush.empty() ? x2.domain() : brush.extent());
@@ -224,13 +226,5 @@ function type(d) {
 // END OF MAIN WEBPAGE SCRIPT
 </script>
 
-<!-- Added this section in case javascript is not enabled on users web browser -->
-<noscript> <br /> Sorry, JavaScript is either not enabled, or is not supported by your web browser.  <br />
-		   Scripts must be enabled to see the interactive data visualizations on this page. <hr /> </noscript>
-			   
-
-
-
 </body>
-
 </html>
