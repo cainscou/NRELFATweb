@@ -58,6 +58,20 @@ noscript {
 
 <body>
 
+<!-- Information displayed above the charts -->
+<h2>S&P 500 Price vs. Time - Example Data Set</h2>
+
+<p>This graph represents the S%P500 over time, and the format will eventually become a template for NREL hydrogen data - Add additional description about the dataset here. </p>
+
+<p><b>Instructions for Interactive Graphics:</b> <br /> <i> Click and drag on the lower graph to select the data range for the upper graph. <br /> This allows you to apply your own custom data filters and criteria!</i></p>
+
+<!-- Additional spacing between text and graph -->
+<p> <br />  <br /> </p>
+
+
+<!-- D3 APPENDS CHART ELEMENTS INTO HERE -->
+<div id="charts"> </div>
+
 <!-- Load the d3 Library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 
@@ -168,7 +182,7 @@ var area2 = d3.svg.area()
 // The skeleton will be filled in once the rest of the data loads.
 
 // Creates SVG graphic of appropriate size
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#charts").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom);
 
@@ -215,7 +229,6 @@ function type(d) {
 		   Scripts must be enabled to see the interactive data visualizations on this page. <hr /> </noscript>
 			   
 
-<!-- D3 APPENDS CHART ELEMENTS HERE -->
 
 
 </body>
