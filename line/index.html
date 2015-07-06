@@ -1,5 +1,27 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
+<html lang="en-US">
+<head>
+
+<meta charset="UTF-8" />
+<title>NREL Line Graph Sample</title>
+
+<meta name="keywords" content="Hydrogen, Fuel Cell, Fuel Cells, National Renewable
+    Energy Lab, NREL, U.S. Department of Energy, DOE, Renewable Energy,
+	Research, Technology Validation, Charts, Graphs" />
+<meta name="description" content="NREL Interactive Web Graphics Template" />
+<meta name="author" content="U.S. Department of Energy, National Renewable Energy Lab" />
+
+
+<!-- Helps compatibility with IE 8 and earlier -->
+<!--[if lt IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.js"></script>
+<![endif
+
+
+<!-- MAIN NREL STYLESHEET -->
+<link rel="stylesheet" type="text/css" href="http://www.nrel.gov/includes/nrel.css" />
+
+
 <style>
 
 svg {
@@ -24,11 +46,29 @@ svg {
   shape-rendering: crispEdges;
 }
 
+noscript {
+  font-size:150%;
+  color:red;
+  margin:30px;
+}
+
 </style>
+</head>
+
+
 <body>
+
+<!-- Load the d3 Library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+
+<!-- Load JQuery - Not currently in use -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+
+<!-- MAIN WEBPAGE SCRIPT -->
 <script>
 
+// THIS SECTION INITIALIZES VARIABLES THAT DEFINE THE CHART
 var margin = {top: 10, right: 10, bottom: 100, left: 40},
     margin2 = {top: 430, right: 10, bottom: 20, left: 40},
     width = 960 - margin.left - margin.right,
@@ -62,6 +102,8 @@ var area2 = d3.svg.area()
     .y0(height2)
     .y1(function(d) { return y2(d.price); });
 
+// THIS SECTION BEGINS CONSTRUCTING A SKELETON FOR THE CHART.
+// The skeleton will be filled in once the rest of the data loads.
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom);
@@ -80,6 +122,7 @@ var context = svg.append("g")
     .attr("class", "context")
     .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
+// AJAX CALL FOR DATA DOWNLOAD, AND ADDING DATA INTO THE CHART
 d3.csv("sp500.csv", type, function(error, data) {
   x.domain(d3.extent(data.map(function(d) { return d.date; })));
   y.domain([0, d3.max(data.map(function(d) { return d.price; }))]);
@@ -116,18 +159,36 @@ d3.csv("sp500.csv", type, function(error, data) {
     .selectAll("rect")
       .attr("y", -6)
       .attr("height", height2 + 7);
-});
+}); // end of d3.csv asynchronous call
 
+
+// SUB-FUNCTION DEFINITIONS
+// This function executes when the brush is used
 function brushed() {
   x.domain(brush.empty() ? x2.domain() : brush.extent());
   focus.select(".area").attr("d", area);
   focus.select(".x.axis").call(xAxis);
 }
 
+// This function executes when data is initially loaded to 
+// convert the variable data types from strings.
 function type(d) {
   d.date = parseDate(d.date);
   d.price = +d.price;
   return d;
 }
 
+// END OF MAIN WEBPAGE SCRIPT
 </script>
+
+<!-- Added this section in case javascript is not enabled on users web browser -->
+<noscript> <br /> Sorry, JavaScript is either not enabled, or is not supported by your web browser.  <br />
+		   Scripts must be enabled to see the interactive data visualizations on this page. <hr /> </noscript>
+			   
+
+<!-- D3 APPENDS CHART ELEMENTS HERE -->
+
+
+</body>
+
+</html>
