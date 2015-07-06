@@ -1,0 +1,237 @@
+
+
+/* Provides compatibility for HTML5 in older browsers by explicitly defining elements as block */
+header, section, footer, aside, nav, main, article, figure {
+    display: block;
+}
+
+
+/* formatting from original cross filter webpage with some modifications */
+body {
+  font-family: "Helvetica Neue";
+  margin: 40px auto;
+  width: 960px;
+  min-height: 2000px;
+}
+
+#body {
+  position: relative;
+}
+
+footer {
+  padding: 2em 0 1em 0;
+  font-size: 12px;
+}
+
+h1 {
+  font-size: 96px;
+  margin-top: .3em;
+  margin-bottom: 0;
+}
+
+h1 + h2 {
+  margin-top: 0;
+}
+
+h2 {
+  font-weight: 400;
+  font-size: 28px;
+}
+
+h1, h2 {
+  font-family: "Yanone Kaffeesatz";
+  text-rendering: optimizeLegibility;
+}
+
+#body {
+  width: 750px;
+}
+
+#body > p {
+  line-height: 1.5em;
+  width: 640px;
+  text-rendering: optimizeLegibility;
+}
+
+#charts {
+  padding: 10px 0;
+}
+
+.chart {
+  display: inline-block;
+  height: 151px;
+  margin-bottom: 20px;
+}
+
+.reset {
+  padding-left: 1em;
+  font-size: smaller;
+  color: #ccc;
+}
+
+.background.bar {
+  fill: #ccc;
+}
+
+.foreground.bar {
+  fill: steelblue;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  font: 10px sans-serif;
+}
+
+.brush rect.extent {
+  fill: steelblue;
+  fill-opacity: .125;
+}
+
+.brush .resize path {
+  fill: #eee;
+  stroke: #666;
+}
+
+#hour-chart {
+  width: 260px;
+}
+
+#fill-time-chart {
+  width: 270px;
+}
+
+#fill-rate-chart {
+  width: 270px;
+}
+
+#fill-amount-chart {
+  width: 620px;
+}
+
+#fill-temp-chart {
+  width: 660px;
+}
+
+#fill-press-chart {
+  width: 670px;
+}
+
+#date-chart {
+  width: 560px;
+}
+
+#dataPoint-list {
+  min-height: 1024px;
+}
+
+#dataPoint-list .date,
+#dataPoint-list .day {
+  margin-bottom: .4em;
+}
+
+#dataPoint-list .dataPoint {
+  line-height: 1.5em;
+  background: #eee;
+  width: 750px;
+  margin-bottom: 1px;
+}
+
+#dataPoint-list .time {
+  color: #999;
+  width: 70px;
+}
+
+#dataPoint-list .dataPoint div {
+  display: inline-block;
+  width: 100px;
+}
+
+#dataPoint-list div.filltime {
+  width: 160px;
+  padding-right: 10px;
+  text-align: right;
+}
+
+#dataPoint-list div.fillamount {
+  width: 70px;
+  padding-right: 10px;
+  text-align: right;
+}
+
+#dataPoint-list div.bar {
+  width: 90px;
+  padding-right: 10px;
+  text-align: right;
+}
+
+#dataPoint-list div.temp {
+  width: 120px;
+  padding-right: 10px;
+  text-align: right;
+}
+
+#dataPoint-list div.rate {
+  width: 120px;
+  padding-right: 10px;
+  text-align: right;
+}
+
+
+#dataPoint-list .early {
+  color: green;
+}
+
+aside {
+  position: relative;
+  left: 540px;
+  font-size: smaller;
+  width: 220px;
+}
+
+noscript {
+  font-size:150%;
+  color:red;
+  margin:30px;
+}
+
+/* Styles for chart loading message */
+#chartLoadingPage {
+ position:absolute;
+ top:0px;
+ left:0px;
+ bottom:0px;
+ width:100%;
+ background:#eeeeee;
+ padding:0px;
+ margin:0px;
+ cursor:wait;
+ z-index:998;
+ -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+ filter: alpha(opacity=50);
+ -moz-opacity:0.5;
+ -khtml-opacity: 0.5;
+ opacity:0.5;
+}
+
+#chartContainerCurtainStatus {
+position: absolute;
+padding-right: 10px;
+-webkit-box-shadow: 0 0 7px 1px #AADAC5;
+-moz-box-shadow:    0 0 7px 1px #AADAC5;
+box-shadow:         0 0 7px 1px #AADAC5;
+top: 0px;
+left: 0px;
+cursor:wait;
+z-index:998;
+font-size: 125%;
+color: #444;
+background-color: white;
+border: 1px solid green;
+opacity: 1.0;
+filter:alpha(opacity=100);
+}

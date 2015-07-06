@@ -1,0 +1,39 @@
+{
+  "name": "nrelfatweb",
+  "version": "1.0.0",
+  "description": "Interactive hydrogen data visualizations",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cainscou/NRELFATweb.git"
+  },
+  "keywords": [
+    "d3.js",
+    "crossfilter",
+    "nrel",
+    "hydrogen"
+  ],
+  "contributors": [
+    {
+        "name": "Chris Ainscough",
+        "email": "Chris.Ainscough@nrel.gov"
+    },
+    {
+        "name": "Spencer Vore",
+        "email": "Spencer.Vore@nrel.gov"
+    },
+    {
+        "name": "Michael Oakley",
+        "email": "Michael.Oakley@nrel.gov"
+    }
+  ],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cainscou/NRELFATweb/issues"
+  },
+  "homepage": "https://github.com/cainscou/NRELFATweb#readme",
+  "scripts": {
+    "test": "echo \"do test stuff\"",
+    "build": "echo \"build stuff\""
+  }
+}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <link rel="stylesheet" href="client/css/styles.hist.css">
+</head>
+<body>
+
+<h2>H2 Station Fills</h2>
+
+<p>MTI2 Data - Add additional description here. </p>
+
+<p><b>Click and drag on any graph to add slider bars to select data. <br /> Click on the reset button to remove slider bars. <br /> This allows you to apply your own custom data filters and criteria!</b></p>
+
+
+<div id="body">
+
+
+    <!-- Displays chart layout -->
+    <div id="charts">
+      <div id="date-chart" class="chart">
+        <div class="title">Fill Events By Month</div>
+      </div>
+      <div id="hour-chart" class="chart">
+        <div class="title">Fill Time of Day <br \> (based on 24hr clock)</div>
+      </div>
+      <div id="fill-time-chart" class="chart">
+        <div class="title">Fill Time in Minutes</div>
+      </div>
+      <div id="fill-rate-chart" class="chart">
+        <div class="title">Fill Rate kg/min</div>
+      </div>
+      <div id="fill-amount-chart" class="chart">
+        <div class="title">Fill Amount in kg</div>
+      </div>
+
+      <div id="fill-temp-chart" class="chart">
+        <div class="title">Final Fill Temperature (deg C)</div>
+      </div>
+      <div id="fill-press-chart" class="chart">
+        <div class="title">Final Fill Pressures (bar)</div>
+      </div>
+
+    </div>
+
+    <!-- Side comment which shows the total amount of data selected vs. the total number of data points -->
+
+    <aside id="totals">
+        <span id="active">-</span> of <span id="total">-</span> fill events selected.
+    </aside>
+
+    <aside id="totals">
+        <span id="kgSelected">-</span> kg of fuel dispensed in selection.
+    </aside>
+
+    <!-- <aside id="totals"><span id="active-kg">-</span> of <span id="total-kg">-</span> kg selected.</aside> -->
+
+
+    <!-- Individual data point list -->
+    <div id="lists">
+      <div id="dataPoint-list" class="list"></div>
+    </div>
+
+
+</div>
+
+<!-- This section displays while data is loading -->
+<div id="chartLoadingPage"></div>
+
+<div id="chartContainerCurtainStatus" class="ui-corner-all">
+  <img src="OpenEIUISpinner.gif" style="padding: 2px; float: left" alt="" />
+  <span id="loaderMsg"><b>Loading visualization... Please wait as this may take awhile...</b><br />
+  This page requires approximately 36MB of data to be downloaded into your browser. </span><span id="loaderText"></span>
+</div>
+
+
+
+<script src="client/vendor/crossfilter.v1.min.js"></script>
+<script src="client/vendor/d3.v3.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+
+<script src="client/js/app.hist.js"></script>
+
+</body>
+</html>
+

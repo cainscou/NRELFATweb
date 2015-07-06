@@ -87,3 +87,17 @@ a:hover {
   font-size: 12px;
   color: #999;
 }
+
+.chart {
+  display: block;
+  margin: auto;
+  margin-top: 40px;
+}
+
+text {
+  font-size: 11px;
+}
+
+rect {
+  fill: none;
+}

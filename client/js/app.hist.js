@@ -1,368 +1,8 @@
-<!doctype html>
-<html lang="en-US">
-<head>
-
-<meta charset="UTF-8" />
-<title>MTI Data 2</title>
-
-<meta name="keywords" content="Hydrogen, Fuel Cell, Fuel Cells, National Renewable
-    Energy Lab, NREL, U.S. Department of Energy, DOE, Renewable Energy,
-	Research, Technology Validation, Charts, Graphs" />
-<meta name="description" content="NREL Interactive Web Graphics Template" />
-<meta name="author" content="U.S. Department of Energy, National Renewable Energy Lab" />
-
-
-<!-- Helps compatibility with IE 8 and earlier -->
-<!--[if lt IE 9]>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.js"></script>
-<![endif
-
-
-<!-- MAIN NREL STYLESHEET -->
-<link rel="stylesheet" type="text/css" href="http://www.nrel.gov/includes/nrel.css" />
-
-<style>
-
-/* @import url(http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:400,700); */
-
-
-
-/* Provides compatibility for HTML5 in older browsers by explicitly defining elements as block */
-header, section, footer, aside, nav, main, article, figure {
-    display: block; 
-}
-
-
-/* formatting from original cross filter webpage with some modifications */
-body {
-  font-family: "Helvetica Neue";
-  margin: 40px auto;
-  width: 960px;
-  min-height: 2000px;
-}
-
-#body {
-  position: relative;
-}
-
-footer {
-  padding: 2em 0 1em 0;
-  font-size: 12px;
-}
-
-h1 {
-  font-size: 96px;
-  margin-top: .3em;
-  margin-bottom: 0;
-}
-
-h1 + h2 {
-  margin-top: 0;
-}
-
-h2 {
-  font-weight: 400;
-  font-size: 28px;
-}
-
-h1, h2 {
-  font-family: "Yanone Kaffeesatz";
-  text-rendering: optimizeLegibility;
-}
-
-#body {
-  width: 750px;
-}
-
-#body > p {
-  line-height: 1.5em;
-  width: 640px;
-  text-rendering: optimizeLegibility;
-}
-
-#charts {
-  padding: 10px 0;
-}
-
-.chart {
-  display: inline-block;
-  height: 151px;
-  margin-bottom: 20px;
-}
-
-.reset {
-  padding-left: 1em;
-  font-size: smaller;
-  color: #ccc;
-}
-
-.background.bar {
-  fill: #ccc;
-}
-
-.foreground.bar {
-  fill: steelblue;
-}
-
-.axis path, .axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-.axis text {
-  font: 10px sans-serif;
-}
-
-.brush rect.extent {
-  fill: steelblue;
-  fill-opacity: .125;
-}
-
-.brush .resize path {
-  fill: #eee;
-  stroke: #666;
-}
-
-#hour-chart {
-  width: 260px;
-}
-
-#fill-time-chart {
-  width: 270px;
-}
-
-#fill-rate-chart {
-  width: 270px;
-}
-
-#fill-amount-chart {
-  width: 620px;
-}
-
-#fill-temp-chart {
-  width: 660px;
-}
-
-#fill-press-chart {
-  width: 670px;
-}
-
-#date-chart {
-  width: 560px;
-}
-
-#dataPoint-list {
-  min-height: 1024px;
-}
-
-#dataPoint-list .date,
-#dataPoint-list .day {
-  margin-bottom: .4em;
-}
-
-#dataPoint-list .dataPoint {
-  line-height: 1.5em;
-  background: #eee;
-  width: 750px;
-  margin-bottom: 1px;
-}
-
-#dataPoint-list .time {
-  color: #999;
-  width: 70px;
-}
-
-#dataPoint-list .dataPoint div {
-  display: inline-block;
-  width: 100px;
-}
-
-#dataPoint-list div.filltime {
-  width: 160px;
-  padding-right: 10px;
-  text-align: right;
-}
-
-#dataPoint-list div.fillamount {
-  width: 70px;
-  padding-right: 10px;
-  text-align: right;
-}
-
-#dataPoint-list div.bar {
-  width: 90px;
-  padding-right: 10px;
-  text-align: right;
-}
-
-#dataPoint-list div.temp {
-  width: 120px;
-  padding-right: 10px;
-  text-align: right;
-}
-
-#dataPoint-list div.rate {
-  width: 120px;
-  padding-right: 10px;
-  text-align: right;
-}
-
-
-#dataPoint-list .early {
-  color: green;
-}
-
-aside {
-  position: relative;
-  left: 540px;
-  font-size: smaller;
-  width: 220px;
-}
-
-noscript {
-  font-size:150%;
-  color:red;
-  margin:30px;
-}
-
-/* Styles for chart loading message */
-#chartLoadingPage {
- position:absolute;
- top:0px;
- left:0px;
- bottom:0px;
- width:100%;
- background:#eeeeee;
- padding:0px;
- margin:0px;
- cursor:wait;
- z-index:998;
- -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
- filter: alpha(opacity=50);
- -moz-opacity:0.5;
- -khtml-opacity: 0.5;
- opacity:0.5;
-}
-
-#chartContainerCurtainStatus {
-position: absolute;
-padding-right: 10px;
--webkit-box-shadow: 0 0 7px 1px #AADAC5;
--moz-box-shadow:    0 0 7px 1px #AADAC5;
-box-shadow:         0 0 7px 1px #AADAC5;
-top: 0px;
-left: 0px;
-cursor:wait;
-z-index:998;
-font-size: 125%;
-color: #444;
-background-color: white;
-border: 1px solid green;
-opacity: 1.0;
-filter:alpha(opacity=100);
-}
-
-</style>
-</head>
-
-
-
-
-
-<body>
-
-<!-- Information displayed above the charts -->
-<h2>H2 Station Fills</h2>
-
-<p>MTI2 Data - Add additional description here. </p>
-
-<p><b>Click and drag on any graph to add slider bars to select data. <br /> Click on the reset button to remove slider bars. <br /> This allows you to apply your own custom data filters and criteria!</b></p>
-
-<p></p>
-
-<!-- This is where the chart locations are defined in the html document -->
-<div id="body">
-
-    <!-- Added this section in case javascript is not enabled on users web browser - Spencer -->
-    <noscript> <br /> Sorry, JavaScript is either not enabled, or is not supported by your web browser.  <br />
-	           Scripts must be enabled to see the interactive data visualizations on this page. <hr /> </noscript>
-
-	<!-- Displays chart layout -->
-	<div id="charts">
-	  <div id="date-chart" class="chart">
-		<div class="title">Fill Events By Month</div>
-	  </div>
-	  <div id="hour-chart" class="chart">
-		<div class="title">Fill Time of Day <br \> (based on 24hr clock)</div>
-	  </div>
-	  <div id="fill-time-chart" class="chart">
-	    <div class="title">Fill Time in Minutes</div>
-	  </div>
-	  <div id="fill-rate-chart" class="chart">
-	    <div class="title">Fill Rate kg/min</div>
-	  </div>
-	  <div id="fill-amount-chart" class="chart">
-	    <div class="title">Fill Amount in kg</div>
-	  </div>
-
-	  <div id="fill-temp-chart" class="chart">
-	    <div class="title">Final Fill Temperature (deg C)</div>
-      </div> 
-	  <div id="fill-press-chart" class="chart">
-	    <div class="title">Final Fill Pressures (bar)</div>
-	  </div>
-
-	</div>
-
-	<!-- Side comment which shows the total amount of data selected vs. the total number of data points -->
-	<aside id="totals"><span id="active">-</span> of <span id="total">-</span> fill events selected.</aside>
-	<aside id="totals"><span id="kgSelected">-</span> kg of fuel dispensed in selection.</aside>
-	<!-- <aside id="totals"><span id="active-kg">-</span> of <span id="total-kg">-</span> kg selected.</aside> -->
-
-
-	<!-- Individual data point list -->
-	<div id="lists">
-	  <div id="dataPoint-list" class="list"></div>
-	</div>
-
-
-</div>
-
-<!-- This section displays while data is loading -->
-<div id="chartLoadingPage">
-</div>
-<div id="chartContainerCurtainStatus" class="ui-corner-all">
-  <img src="OpenEIUISpinner.gif" style="padding: 2px; float: left" alt="" />
-  <span id="loaderMsg"><b>Loading visualization... Please wait as this may take awhile...</b><br />
-  This page requires approximately 36MB of data to be downloaded into your browser. </span><span id="loaderText"></span>
-</div>
-
-
-
-
-<!-- BEGIN JAVASCRIPTS HERE -->
-
-<!--These are the crossfilter and d3 libraries that are needed to drive the data 
-    filtering and graphics -->
-<script src="../lib/crossfilter.v1.min.js"></script>
-<script src="../lib/d3.v3.min.js"></script>
-
-<!-- Load JQuery -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-
-
-<!-- This is the javascript that produces custom graphs and charts for the specific 
-     application or webpage -->
-<script>
-
-
-// Custom JavaScript code that uses all of the libraries to render interactive graphs
 d3.csv("data_out_filtered.csv", function(error, allRawData) {
 
   // Various formatters.
   var formatInt = d3.format(",d"),
-	  formatDecimal = d3.format(",.2f"),
+      formatDecimal = d3.format(",.2f"),
       formatChange = d3.format("+,d"),
       formatDate = d3.time.format("%B %d, %Y"),
       formatTime = d3.time.format("%I:%M %p");
@@ -375,96 +15,96 @@ d3.csv("data_out_filtered.csv", function(error, allRawData) {
   allRawData.forEach(function(d, i) {
     d.index = i;
     d.date = parseDate(d.date);
-	d.fill_time_min = +d.fill_time_min;
-	d.fill_amount_kg = +d.fill_amount_kg;
-	d.fill_rate = +d.fill_rate;
-	d.final_fill_temp = +d.final_fill_temp;
-	d.final_fill_press = +d.final_fill_press;
-	
+    d.fill_time_min = +d.fill_time_min;
+    d.fill_amount_kg = +d.fill_amount_kg;
+    d.fill_rate = +d.fill_rate;
+    d.final_fill_temp = +d.final_fill_temp;
+    d.final_fill_press = +d.final_fill_press;
+
   });
 
   // Define chart formatting options for each graph:
   // Chart 1
   var chart1_DomainMin = new Date(2010, 0, 1),
-	  chart1_DomainMax = new Date(2014, 1, 1),
-	  chart1_numOfBins = (4*12 + 1);
-	  
+      chart1_DomainMax = new Date(2014, 1, 1),
+      chart1_numOfBins = (4*12 + 1);
+
   // Chart 2
   var max_hour = 24;
-	  
+
   var chart2_DomainMin = 0,
-	  chart2_DomainMax = max_hour+1,
-	  chart2_numOfBins = (chart2_DomainMax - chart2_DomainMin);
- 
+      chart2_DomainMax = max_hour+1,
+      chart2_numOfBins = (chart2_DomainMax - chart2_DomainMin);
+
   // Chart 3
   var chart3_DomainMin = 0,
-	  chart3_DomainMax = 25,
-	  chart3_binSize = 1,
-	  chart3_numOfBins = (chart3_DomainMax - chart3_DomainMin)/ chart3_binSize;
+      chart3_DomainMax = 25,
+      chart3_binSize = 1,
+      chart3_numOfBins = (chart3_DomainMax - chart3_DomainMin)/ chart3_binSize;
 
   // Chart 4
   var chart4_DomainMin = 0,
-	  chart4_DomainMax = 5,
-	  chart4_binSize = 0.1,
-	  chart4_numOfBins = (chart4_DomainMax - chart4_DomainMin) / chart4_binSize;
-	  
+      chart4_DomainMax = 5,
+      chart4_binSize = 0.1,
+      chart4_numOfBins = (chart4_DomainMax - chart4_DomainMin) / chart4_binSize;
+
   // Chart 5
   var chart5_DomainMin = 0,
-	  chart5_DomainMax = 12,  
-	  chart5_binSize = 0.2,
-	  chart5_numOfBins = (chart5_DomainMax - chart5_DomainMin)/chart5_binSize;
-	  
+      chart5_DomainMax = 12,
+      chart5_binSize = 0.2,
+      chart5_numOfBins = (chart5_DomainMax - chart5_DomainMin)/chart5_binSize;
+
   // Chart 6
   var chart6_DomainMin = -20,
-	  chart6_DomainMax = 60,  
-	  chart6_binSize = 1.25,
-	  chart6_numOfBins = (chart6_DomainMax - chart6_DomainMin)/chart6_binSize;
-	  
+      chart6_DomainMax = 60,
+      chart6_binSize = 1.25,
+      chart6_numOfBins = (chart6_DomainMax - chart6_DomainMin)/chart6_binSize;
+
   // Chart 7
   var chart7_DomainMin = -10,
-	  chart7_DomainMax = 800,  
-	  chart7_binSize = 12.5,
-	  chart7_numOfBins = (chart7_DomainMax - chart7_DomainMin) / chart7_binSize;
-	  
+      chart7_DomainMax = 800,
+      chart7_binSize = 12.5,
+      chart7_numOfBins = (chart7_DomainMax - chart7_DomainMin) / chart7_binSize;
 
 
-  
+
+
   // Create the crossfilter for the relevant dimensions and groups.
   var crossfilterData = crossfilter(allRawData),
       all = crossfilterData.groupAll(),
-	  
-	  // chart 1
+
+      // chart 1
       date = crossfilterData.dimension(function(d) { return d.date; }),
       dates = date.group(d3.time.month),
-	  
-	  // chart 2
+
+      // chart 2
       hour = crossfilterData.dimension(function(d) { return d.date.getHours() + d.date.getMinutes() / 60; }),
       hours = hour.group(Math.floor),
-	  
-	  // chart 3
-	  fill_time_min = crossfilterData.dimension(function(d) { return Math.min(24, d.fill_time_min); }),
-	  fill_time_mins = fill_time_min.group(function(d) { return Math.floor(d / chart3_binSize) * chart3_binSize; }),
-	  
-	  // chart 4
-	  fill_rate = crossfilterData.dimension(function(d) { return Math.max(0, d.fill_rate); }),
-	  fill_rates = fill_rate.group( function(d) { return Math.floor(d / chart4_binSize) * chart4_binSize; } ),
-	  
-	  // chart 5
-	  fill_amount_kg = crossfilterData.dimension(function(d) { return Math.max(0, d.fill_amount_kg); }),
-	  fill_amount_kgs = fill_amount_kg.group( function(d) { return Math.floor(d /chart5_binSize) * chart5_binSize; }),
 
-	  // chart 6
-	  fill_temp = crossfilterData.dimension(function(d) { return d.final_fill_temp; }),
-	  fill_temps = fill_temp.group( function(d) { return Math.floor(d / chart6_binSize) * chart6_binSize; } ),
-	  
-	  // chart 7
-	  fill_pressure = crossfilterData.dimension(function(d) { return d.final_fill_press; }),
-	  fill_pressures = fill_pressure.group( function(d) { return Math.floor(d /chart7_binSize) * chart7_binSize; } );
+      // chart 3
+      fill_time_min = crossfilterData.dimension(function(d) { return Math.min(24, d.fill_time_min); }),
+      fill_time_mins = fill_time_min.group(function(d) { return Math.floor(d / chart3_binSize) * chart3_binSize; }),
+
+      // chart 4
+      fill_rate = crossfilterData.dimension(function(d) { return Math.max(0, d.fill_rate); }),
+      fill_rates = fill_rate.group( function(d) { return Math.floor(d / chart4_binSize) * chart4_binSize; } ),
+
+      // chart 5
+      fill_amount_kg = crossfilterData.dimension(function(d) { return Math.max(0, d.fill_amount_kg); }),
+      fill_amount_kgs = fill_amount_kg.group( function(d) { return Math.floor(d /chart5_binSize) * chart5_binSize; }),
+
+      // chart 6
+      fill_temp = crossfilterData.dimension(function(d) { return d.final_fill_temp; }),
+      fill_temps = fill_temp.group( function(d) { return Math.floor(d / chart6_binSize) * chart6_binSize; } ),
+
+      // chart 7
+      fill_pressure = crossfilterData.dimension(function(d) { return d.final_fill_press; }),
+      fill_pressures = fill_pressure.group( function(d) { return Math.floor(d /chart7_binSize) * chart7_binSize; } );
 
 
   // Define each barchart
   var charts = [
-  
+
     // chart 1
     barChart()
         .dimension(date)
@@ -474,8 +114,8 @@ d3.csv("data_out_filtered.csv", function(error, allRawData) {
         .domain([chart1_DomainMin, chart1_DomainMax])
         .rangeRound([0, 11 * chart1_numOfBins]))
         .filter([new Date(2011, 1, 1), new Date(2013, 7, 1)]),
-		
-	// chart 2
+
+    // chart 2
     barChart()
         .dimension(hour)
         .group(hours)
@@ -484,39 +124,39 @@ d3.csv("data_out_filtered.csv", function(error, allRawData) {
         .rangeRound([0, 10 * chart2_numOfBins])),
 
     // chart 3
-	barChart()
+    barChart()
         .dimension(fill_time_min)
         .group(fill_time_mins)
       .x(d3.scale.linear()
         .domain([0, 25])
         .rangeRound([0, 10 * chart3_numOfBins])),
-		
-	// chart 4
-	barChart()
+
+    // chart 4
+    barChart()
         .dimension(fill_rate)
         .group(fill_rates)
       .x(d3.scale.linear()
         .domain([chart4_DomainMin, chart4_DomainMax])
         .rangeRound([0, 10 * chart4_numOfBins])),
-	
-	// chart 5
-	barChart()
+
+    // chart 5
+    barChart()
         .dimension(fill_amount_kg)
         .group(fill_amount_kgs)
       .x(d3.scale.linear()
         .domain([chart5_DomainMin, chart5_DomainMax])
         .rangeRound([0, 10 * chart5_numOfBins])),
-		
-	// chart 6
-	barChart()
+
+    // chart 6
+    barChart()
         .dimension(fill_temp)
         .group(fill_temps)
       .x(d3.scale.linear()
         .domain([chart6_DomainMin, chart6_DomainMax])
         .rangeRound([0, 10 * chart6_numOfBins])),
-		
-	// chart 7
-	barChart()
+
+    // chart 7
+    barChart()
         .dimension(fill_pressure)
         .group(fill_pressures)
       .x(d3.scale.linear()
@@ -556,54 +196,54 @@ d3.csv("data_out_filtered.csv", function(error, allRawData) {
     chart.each(render);
     list.each(render);
     d3.select("#active").text(formatInt(all.reduceCount().value()));
-	d3.select("#kgSelected")
-      .text(formatInt(Math.round(all.reduceSum(function(d) { return d.fill_amount_kg; }).value() ))); 
-	// d3.select("#active-kg").text(formatInt(fill_amount_kgs.value()));
+    d3.select("#kgSelected")
+      .text(formatInt(Math.round(all.reduceSum(function(d) { return d.fill_amount_kg; }).value() )));
+    // d3.select("#active-kg").text(formatInt(fill_amount_kgs.value()));
 
   }
 
   // Convert Excel date/time stamps to JavaScript Date
   function parseDate(d) {
 
-    var d = new Date((Number(d) - 25569)*24*60*60*1000+500); //Add offset of 500 to get rid of floating point errors.  Without it 01:00:00 might become 00:59:59 due to cutoff error in the milliseconds, and the data event will be placed into the wrong bin.  
-	return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(),
-		d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds(), 
-		d.getUTCMilliseconds());
-  
-  
-    /*  
+    var d = new Date((Number(d) - 25569)*24*60*60*1000+500); //Add offset of 500 to get rid of floating point errors.  Without it 01:00:00 might become 00:59:59 due to cutoff error in the milliseconds, and the data event will be placed into the wrong bin.
+    return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(),
+        d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds(),
+        d.getUTCMilliseconds());
+
+
+    /*
     // The first date created will be in GMT, but we want times to be local time.  If times are not already put into local, the users computer will offset the timestamps from GMT based on their local time zone, so time of day graphs will be inaccurate for everyone outside of GMT. However, the second method of creating a new date will put the date in local time, so we are just using it to transfer the years, months, days, hours, etc from GMT to local time.  All Excel timestamp data that is read in will be interpreted at UTC, which could be wrong, so this is a workaround.
     var d = new Date((Number(d) - 25569)*24*60*60*1000);
-	return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(),
-		d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds(), 
-		d.getUTCMilliseconds());
-		*/ 
-		
+    return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(),
+        d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds(),
+        d.getUTCMilliseconds());
+        */
 
-	/*
-	// FIRST ATTEMPT - Problem: getTimezoneOffet does not account for daylight savings!
-	var timeOffset = new Date();
+
+    /*
+    // FIRST ATTEMPT - Problem: getTimezoneOffet does not account for daylight savings!
+    var timeOffset = new Date();
     return new Date((Number(d) - 25569)*24*60*60*1000 +timeOffset.getTimezoneOffset()*60*1000);
-    //return new Date((Number(d) - 25569)*24*60*60*1000 + 
-	//        timeOffset.getTimezoneOffset()*60*1000);// Convert Excel Serial Date into javascript date. Number converts text string to number. getTimezoneOffet corrects the timestamp to diplay UTC as local time, so users in different time zones will see the same thing.
-	*/
-	
-	// SECOND FAILED ATTEMPT - Problem: for some reason when you change the text string to "Greenwich Mean Time" it still reads the date in as local time. Thought it was a clever idea but NO.
-	// d = 36892.0006944444;
-	// d = new Date((Number(d) - 25569)*24*60*60*1000);
-	// document.getElementById("demo").innerHTML = d;
-	// d = d.toString();
-	// var pos1 = d.indexOf("(");
-	// var pos2 = d.indexOf(")");
-	// document.getElementById("demo").innerHTML += "<br>" + pos1 + "<br>" + pos2;
+    //return new Date((Number(d) - 25569)*24*60*60*1000 +
+    //        timeOffset.getTimezoneOffset()*60*1000);// Convert Excel Serial Date into javascript date. Number converts text string to number. getTimezoneOffet corrects the timestamp to diplay UTC as local time, so users in different time zones will see the same thing.
+    */
 
-	// var e = d.slice(pos1 + 1, pos2);
-	// document.getElementById("demo").innerHTML += "<br>" + e
+    // SECOND FAILED ATTEMPT - Problem: for some reason when you change the text string to "Greenwich Mean Time" it still reads the date in as local time. Thought it was a clever idea but NO.
+    // d = 36892.0006944444;
+    // d = new Date((Number(d) - 25569)*24*60*60*1000);
+    // document.getElementById("demo").innerHTML = d;
+    // d = d.toString();
+    // var pos1 = d.indexOf("(");
+    // var pos2 = d.indexOf(")");
+    // document.getElementById("demo").innerHTML += "<br>" + pos1 + "<br>" + pos2;
 
-	// d = d.replace(e, "Greenwich Mean Time");
-	// document.getElementById("demo").innerHTML += "<br>" + d
-	// d = new Date(d);
-	// document.getElementById("demo").innerHTML += "<br>" + d
+    // var e = d.slice(pos1 + 1, pos2);
+    // document.getElementById("demo").innerHTML += "<br>" + e
+
+    // d = d.replace(e, "Greenwich Mean Time");
+    // document.getElementById("demo").innerHTML += "<br>" + d
+    // d = new Date(d);
+    // document.getElementById("demo").innerHTML += "<br>" + d
 
 
   }
@@ -650,7 +290,7 @@ d3.csv("data_out_filtered.csv", function(error, allRawData) {
       dataPointEnter.append("div")
           .attr("class", "bar")
           .text(function(d) { return formatDecimal(d.final_fill_press) + " bar"; });
-		  
+
       dataPointEnter.append("div")
           .attr("class", "temp")
           .text(function(d) { return formatDecimal(d.final_fill_temp) + " deg C"; });
@@ -658,8 +298,8 @@ d3.csv("data_out_filtered.csv", function(error, allRawData) {
       dataPointEnter.append("div")
           .attr("class", "filltime")
           .text(function(d) { return formatDecimal(d.fill_time_min) + " mins"; });
-		  
-	  dataPointEnter.append("div")
+
+      dataPointEnter.append("div")
           .attr("class", "rate")
           .text(function(d) { return formatDecimal(d.fill_rate) + " kg/min"; });
 
@@ -684,7 +324,7 @@ d3.csv("data_out_filtered.csv", function(error, allRawData) {
         round;
 
     function chart(div) {
-      var width = x.range()[1],  //width = 500, 
+      var width = x.range()[1],  //width = 500,
           height = y.range()[0];
 
       y.domain([0, group.top(1)[0].value]);
@@ -756,7 +396,7 @@ d3.csv("data_out_filtered.csv", function(error, allRawData) {
       function barPath(groups) {
         var path = [],
             i = -1,
-			
+
             n = groups.length,
             d;
         while (++i < n) {
@@ -819,14 +459,14 @@ d3.csv("data_out_filtered.csv", function(error, allRawData) {
       if (!arguments.length) return x;
       x = input;
       axis.scale(x);
-	  
-	  /*
-	  if (barChart.id == 4) {
-      	axis.tickValues([new Date(2009, 0, 1), new Date(2009, 6, 1), new Date(2010, 0, 1), new Date(2010, 6, 1), new Date(2011, 0, 1), new Date(2011, 6, 1), new Date(2012, 0, 1), new Date(2012, 6, 1),
-			new Date(2013, 0, 1), new Date(2013, 6, 1), new Date(2014, 0, 1) ]);
-      } 
-	 */
-	 
+
+      /*
+      if (barChart.id == 4) {
+        axis.tickValues([new Date(2009, 0, 1), new Date(2009, 6, 1), new Date(2010, 0, 1), new Date(2010, 6, 1), new Date(2011, 0, 1), new Date(2011, 6, 1), new Date(2012, 0, 1), new Date(2012, 6, 1),
+            new Date(2013, 0, 1), new Date(2013, 6, 1), new Date(2014, 0, 1) ]);
+      }
+     */
+
       brush.x(x);
       return chart;
     };
@@ -870,19 +510,19 @@ d3.csv("data_out_filtered.csv", function(error, allRawData) {
     return d3.rebind(chart, brush, "on");
   } // end of barChart() function
 
-  
-	// Allow page to be viewed once data has finished loading
 
-	function hideLoadingIndicator() {
-		try {
-			   var msDelay = 750;
-			   // slow down hide for certain types
-			   $("#chartContainerCurtainStatus").hide();
-			   $("#chartLoadingPage").hide();
-		} catch(err) {
-			   console.error("ERROR: hideLoadingIndicator problem: "+err);
-		}
-	};
+    // Allow page to be viewed once data has finished loading
+
+    function hideLoadingIndicator() {
+        try {
+               var msDelay = 750;
+               // slow down hide for certain types
+               $("#chartContainerCurtainStatus").hide();
+               $("#chartLoadingPage").hide();
+        } catch(err) {
+               console.error("ERROR: hideLoadingIndicator problem: "+err);
+        }
+    };
 
 
 
@@ -913,11 +553,4 @@ function showLoadingIndicatorMsg(msg) {
                console.error("ERROR: showLoadingIndicator problem: "+err);
         }
 };  */
-
-
-</script>
-
-</body>
-<!-- End of webpage source -->
-</html>
 

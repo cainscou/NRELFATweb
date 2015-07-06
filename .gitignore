@@ -1,0 +1,8 @@
+node_modules
+*.sublime-project
+*.sublime-workspace
+*.bak
+*.tmp
+Thumbs.db
+desktop.ini
+.DS_Store
