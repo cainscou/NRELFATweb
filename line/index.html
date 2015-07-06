@@ -68,7 +68,49 @@ noscript {
 <!-- MAIN WEBPAGE SCRIPT -->
 <script>
 
-// THIS SECTION INITIALIZES VARIABLES THAT DEFINE THE CHART
+
+// AJAX CALL FOR DATA DOWNLOAD, AND ADDING DATA INTO THE CHART
+d3.csv("sp500.csv", type, function(error, data) {
+  x.domain(d3.extent(data.map(function(d) { return d.date; })));
+  y.domain([0, d3.max(data.map(function(d) { return d.price; }))]);
+  x2.domain(x.domain());
+  y2.domain(y.domain());
+
+  focus.append("path")
+      .datum(data)
+      .attr("class", "area")
+      .attr("d", area);
+
+  focus.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  focus.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
+
+  context.append("path")
+      .datum(data)
+      .attr("class", "area")
+      .attr("d", area2);
+
+  context.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height2 + ")")
+      .call(xAxis2);
+
+  context.append("g")
+      .attr("class", "x brush")
+      .call(brush)
+    .selectAll("rect")
+      .attr("y", -6)
+      .attr("height", height2 + 7);
+}); // end of d3.csv asynchronous call
+
+
+// THIS SECTION INITIALIZES VARIABLES THAT DEFINE THE CHART 
+// This runs first after the data download begins in d3.csv
 var margin = {top: 10, right: 10, bottom: 100, left: 40},
     margin2 = {top: 430, right: 10, bottom: 20, left: 40},
     width = 960 - margin.left - margin.right,
@@ -122,45 +164,8 @@ var context = svg.append("g")
     .attr("class", "context")
     .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
-// AJAX CALL FOR DATA DOWNLOAD, AND ADDING DATA INTO THE CHART
-d3.csv("sp500.csv", type, function(error, data) {
-  x.domain(d3.extent(data.map(function(d) { return d.date; })));
-  y.domain([0, d3.max(data.map(function(d) { return d.price; }))]);
-  x2.domain(x.domain());
-  y2.domain(y.domain());
-
-  focus.append("path")
-      .datum(data)
-      .attr("class", "area")
-      .attr("d", area);
-
-  focus.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
-
-  focus.append("g")
-      .attr("class", "y axis")
-      .call(yAxis);
-
-  context.append("path")
-      .datum(data)
-      .attr("class", "area")
-      .attr("d", area2);
-
-  context.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height2 + ")")
-      .call(xAxis2);
-
-  context.append("g")
-      .attr("class", "x brush")
-      .call(brush)
-    .selectAll("rect")
-      .attr("y", -6)
-      .attr("height", height2 + 7);
-}); // end of d3.csv asynchronous call
-
+	
+	
 
 // SUB-FUNCTION DEFINITIONS
 // This function executes when the brush is used
