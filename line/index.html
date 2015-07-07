@@ -57,6 +57,11 @@ svg {
   shape-rendering: crispEdges;
 }
 
+.axis-label {
+  font-size: 1.3em;
+  
+}
+
 .brush .extent {
   stroke: #fff;
   fill-opacity: .125;
@@ -175,11 +180,11 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
 // This runs immediately after the data download in d3.csv begins
 
 // Defines chart dimensions
-var margin = {top: 10, right: 10, bottom: 100, left: 40},
-    margin2 = {top: 430, right: 10, bottom: 20, left: 40},
+var margin = {top: 10, right: 10, bottom: 135, left: 60},
+    margin2 = {top: 430, right: 10, bottom: 60, left: 60},
     width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom,
-    height2 = 500 - margin2.top - margin2.bottom;
+    height = 540 - margin.top - margin.bottom,
+    height2 = 540 - margin2.top - margin2.bottom;
 
 // Defines function to convert timestamps into JavaScript date format
 var parseDate = d3.time.format("%Y").parse;
@@ -245,14 +250,28 @@ svg.append("defs").append("clipPath")
 var focus = svg.append("g")
     .attr("class", "focus")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	
+focus.append("text")
+  .attr("class", "axis-label")
+  .attr("transform", "rotate(-90)")
+  .attr("y", -margin.left+7)
+  .attr("x", -height / 4)
+  .attr("dy", ".71em")
+  .text("Cost in $");
 
 // Append g tag to define lower sub chart chart with filters.
 var context = svg.append("g")
     .attr("class", "context")
     .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 	
-	
+context.append("text")
+  .attr("class", "axis-label")
+  .attr("y", height2 + margin2.bottom - 40)
+  .attr("x", width*(3/4))
+  .attr("dy", ".71em")
+  .text("Year");	
 
+  
 // SUB-FUNCTION DEFINITIONS:
 // This function executes when the brush is used to redefine the x-axis scale.
 function brushed() {
