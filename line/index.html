@@ -31,7 +31,19 @@ svg {
   clip-path: url(#clip);
 }
 
+.area2 {
+  fill: firebrick;
+  clip-path: url(#clip);
+}
+
 .line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+  clip-path: url(#clip);
+}
+
+.line2 {
   fill: none;
   stroke: red;
   stroke-width: 1.5px;
@@ -115,6 +127,11 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
       .datum(data)
       .attr("class", "line")
       .attr("d", line);
+	  
+  focus.append("path")
+      .datum(data)
+      .attr("class", "line2")
+      .attr("d", line2);
 
   // Draw the x-axis onto the main upper chart
   focus.append("g")
@@ -125,13 +142,18 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
   // Draw the y-axis onto the main upper chart
   focus.append("g")
       .attr("class", "y axis")
-      .call(yAxis)
+      .call(yAxis);
 
   // Draw the data curve into the lower sub chart with brush filter
   context.append("path")
       .datum(data)
       .attr("class", "area")
-      .attr("d", area2);
+      .attr("d", area);
+	  
+  context.append("path")
+    .datum(data)
+    .attr("class", "area2")
+    .attr("d", area2);
 
   // Draw the x-axis onto the lower sub chart with brush filters
   context.append("g")
@@ -182,13 +204,25 @@ var brush = d3.svg.brush()
 var line = d3.svg.line()
     .x(function(d) { return x(d.year); })
     .y(function(d) { return y(d.cost_per_kW_NI); });
+	
+var line2 = d3.svg.line()
+    .x(function(d) { return x(d.year); })
+    .y(function(d) { return y(d.cost_per_kW_Incentive); });
+	
 
 // Define function to construct curve on lower sub chart w brush filter
-var area2 = d3.svg.area()
+var area = d3.svg.area()
     .interpolate("monotone")
     .x(function(d) { return x2(d.year); })
     .y0(height2)
     .y1(function(d) { return y2(d.cost_per_kW_NI); });
+	
+var area2 = d3.svg.area()
+    .interpolate("monotone")
+    .x(function(d) { return x2(d.year); })
+    .y0(height2)
+    .y1(function(d) { return y2(d.cost_per_kW_Incentive); });
+
 
 	
 	
@@ -224,6 +258,7 @@ var context = svg.append("g")
 function brushed() {
   x.domain(brush.empty() ? x2.domain() : brush.extent());
   focus.select(".line").attr("d", line);
+  focus.select(".line2").attr("d", line2);
   focus.select(".x.axis").call(xAxis);
 }
 
@@ -232,6 +267,7 @@ function brushed() {
 function type(d) {
   d.year = parseDate(d.year);
   d.cost_per_kW_NI = +d.cost_per_kW_NI;
+  d.cost_per_kW_Incentive = +d.cost_per_kW_Incentive;
   return d;
 }
 
