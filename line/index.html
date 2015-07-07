@@ -64,9 +64,9 @@ noscript {
 
 <!-- WEBPAGE HTML AND TEXT INFORMATION -->
 <!-- Information displayed above the charts -->
-<h2>S&P 500 Price vs. Time - Example Data Set For Template</h2>
+<h2>Average $2010/W Trend for Overall Deployments</h2>
 
-<p>This graph represents the S&P500 over time, and the format will eventually become a template for NREL hydrogen data - Add additional description about the dataset here. </p>
+<p>This graph represents the average cost per watt of Fuel Cell deployments across the country</p>
 
 <p><b>Instructions for Interactive Graphics:</b> <br /> <i> Click and drag on the lower graph to select the data range for the upper graph. <br /> This allows you to apply your own custom data filters and criteria!</i></p>
 
@@ -96,7 +96,7 @@ noscript {
 // execute.  Then, when all data has downloaded, the code inside the function passed 
 // as an argument to d3.csv will execute.
 
-d3.csv("sp500.csv", type, function(error, data) {
+d3.csv("cdp8_condensed.csv", type, function(error, data) {
 
   // Defines some error handling if data file can not be loaded.
   if (error) { 
@@ -105,16 +105,10 @@ d3.csv("sp500.csv", type, function(error, data) {
     throw error;
   }
   // defines the domain of the data on each chart scale
-  x.domain(d3.extent(data.map(function(d) { return d.date; })));
-  y.domain([0, d3.max(data.map(function(d) { return d.price; }))]);
+  x.domain(d3.extent(data.map(function(d) { return d.year; })));
+  y.domain([0, d3.max(data.map(function(d) { return d.cost_per_kW_NI; }))]);
   x2.domain(x.domain());
   y2.domain(y.domain());
-
-  // Draw the data curve area into the main upper chart
-  focus.append("path")
-      .datum(data)
-      .attr("class", "area")
-      .attr("d", area);
 	  
   // Draw the data curve line into the main upper chart
   focus.append("path")
@@ -131,7 +125,7 @@ d3.csv("sp500.csv", type, function(error, data) {
   // Draw the y-axis onto the main upper chart
   focus.append("g")
       .attr("class", "y axis")
-      .call(yAxis);
+      .call(yAxis)
 
   // Draw the data curve into the lower sub chart with brush filter
   context.append("path")
@@ -166,7 +160,7 @@ var margin = {top: 10, right: 10, bottom: 100, left: 40},
     height2 = 500 - margin2.top - margin2.bottom;
 
 // Defines function to convert timestamps into JavaScript date format
-var parseDate = d3.time.format("%b %Y").parse;
+var parseDate = d3.time.format("%Y").parse;
 
 // Define d3 scales for the chart axes.
 var x = d3.time.scale().range([0, width]),
@@ -184,24 +178,17 @@ var brush = d3.svg.brush()
     .x(x2)
     .on("brush", brushed);
 
-// Define function to construct curve on main chart
-var area = d3.svg.area()
-    .interpolate("monotone")
-    .x(function(d) { return x(d.date); })
-    .y0(height)
-    .y1(function(d) { return y(d.price); });
-
 // Define function to draw a line on the main chart	
 var line = d3.svg.line()
-    .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d.price); });
+    .x(function(d) { return x(d.year); })
+    .y(function(d) { return y(d.cost_per_kW_NI); });
 
 // Define function to construct curve on lower sub chart w brush filter
 var area2 = d3.svg.area()
     .interpolate("monotone")
-    .x(function(d) { return x2(d.date); })
+    .x(function(d) { return x2(d.year); })
     .y0(height2)
-    .y1(function(d) { return y2(d.price); });
+    .y1(function(d) { return y2(d.cost_per_kW_NI); });
 
 	
 	
@@ -236,7 +223,6 @@ var context = svg.append("g")
 // This function executes when the brush is used to redefine the x-axis scale.
 function brushed() {
   x.domain(brush.empty() ? x2.domain() : brush.extent());
-  focus.select(".area").attr("d", area);
   focus.select(".line").attr("d", line);
   focus.select(".x.axis").call(xAxis);
 }
@@ -244,8 +230,8 @@ function brushed() {
 // This function executes when data is initially loaded to 
 // convert the variable data types from strings.
 function type(d) {
-  d.date = parseDate(d.date);
-  d.price = +d.price;
+  d.year = parseDate(d.year);
+  d.cost_per_kW_NI = +d.cost_per_kW_NI;
   return d;
 }
 
