@@ -31,6 +31,13 @@ svg {
   clip-path: url(#clip);
 }
 
+.line {
+  fill: none;
+  stroke: red;
+  stroke-width: 1.5px;
+  clip-path: url(#clip);
+}
+
 .axis path,
 .axis line {
   fill: none;
@@ -59,7 +66,7 @@ noscript {
 <!-- Information displayed above the charts -->
 <h2>S&P 500 Price vs. Time - Example Data Set For Template</h2>
 
-<p>This graph represents the S%P500 over time, and the format will eventually become a template for NREL hydrogen data - Add additional description about the dataset here. </p>
+<p>This graph represents the S&P500 over time, and the format will eventually become a template for NREL hydrogen data - Add additional description about the dataset here. </p>
 
 <p><b>Instructions for Interactive Graphics:</b> <br /> <i> Click and drag on the lower graph to select the data range for the upper graph. <br /> This allows you to apply your own custom data filters and criteria!</i></p>
 
@@ -90,17 +97,30 @@ noscript {
 // as an argument to d3.csv will execute.
 
 d3.csv("sp500.csv", type, function(error, data) {
+
+  // Defines some error handling if data file can not be loaded.
+  if (error) { 
+    d3.select("#charts").append("p").append("b")
+    .text("The data file to produce interactive graphics could not be loaded."); 
+    throw error;
+  }
   // defines the domain of the data on each chart scale
   x.domain(d3.extent(data.map(function(d) { return d.date; })));
   y.domain([0, d3.max(data.map(function(d) { return d.price; }))]);
   x2.domain(x.domain());
   y2.domain(y.domain());
 
-  // Draw the data curve into the main upper chart
+  // Draw the data curve area into the main upper chart
   focus.append("path")
       .datum(data)
       .attr("class", "area")
       .attr("d", area);
+	  
+  // Draw the data curve line into the main upper chart
+  focus.append("path")
+      .datum(data)
+      .attr("class", "line")
+      .attr("d", line);
 
   // Draw the x-axis onto the main upper chart
   focus.append("g")
@@ -171,6 +191,11 @@ var area = d3.svg.area()
     .y0(height)
     .y1(function(d) { return y(d.price); });
 
+// Define function to draw a line on the main chart	
+var line = d3.svg.line()
+    .x(function(d) { return x(d.date); })
+    .y(function(d) { return y(d.price); });
+
 // Define function to construct curve on lower sub chart w brush filter
 var area2 = d3.svg.area()
     .interpolate("monotone")
@@ -212,6 +237,7 @@ var context = svg.append("g")
 function brushed() {
   x.domain(brush.empty() ? x2.domain() : brush.extent());
   focus.select(".area").attr("d", area);
+  focus.select(".line").attr("d", line);
   focus.select(".x.axis").call(xAxis);
 }
 
