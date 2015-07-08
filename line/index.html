@@ -115,6 +115,14 @@ noscript {
 
 d3.csv("cdp8_condensed.csv", type, function(error, data) {
 
+  /*
+  // TEST CODE - REMOVE
+  var X = data.map(function(d) { return d.year; });
+  var Y = data.map(function(d) { return d.cost_per_kW_NI; });
+  var X_in = new Date();
+  X_in.setFullYear(2011, 05, 01);
+  */
+
   // Defines some error handling if data file can not be loaded.
   if (error) { 
     d3.select("#charts").append("p").append("b")
@@ -137,6 +145,27 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
       .datum(data)
       .attr("class", "line2")
       .attr("d", line2);
+	  
+  // Add text labels to each data line
+  focus.append("text")
+	.attr("class", "data-label")
+	.attr("id", "line-label")
+	.attr("text-anchor", "start")
+	.attr("y",  y(data[data.length - 1].cost_per_kW_NI))
+	.attr("x", width + 5)
+	.attr("dy", ".71em")
+	.text("Without Incentives");
+
+  // Add text labels to each data line
+  focus.append("text")
+	.attr("class", "data-label")
+	.attr("id", "line2-label")
+	.attr("text-anchor", "start")
+	.attr("y",  y(data[data.length - 1].cost_per_kW_Incentive))
+	.attr("x", width + 5)
+	.attr("dy", ".71em")
+	.text("With Incentives");
+	
 
   // Draw the x-axis onto the main upper chart
   focus.append("g")
@@ -173,15 +202,21 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
     .selectAll("rect")
       .attr("y", -6)
       .attr("height", height2 + 7);
+	  
+  // save copy of data for use outside of asynchronous call
+  data_store = data;
 }); // end of d3.csv asynchronous call
 
 
 // THIS SECTION INITIALIZES VARIABLES THAT DEFINE THE CHART:
 // This runs immediately after the data download in d3.csv begins
 
+// Initialize container for d3 data outside d3.csv function, so data is accessible globally.
+var data_store;
+
 // Defines chart dimensions
-var margin = {top: 10, right: 10, bottom: 135, left: 70},
-    margin2 = {top: 430, right: 10, bottom: 60, left: 70},
+var margin = {top: 10, right: 150, bottom: 135, left: 70},
+    margin2 = {top: 430, right: 150, bottom: 60, left: 70},
     width = 960 - margin.left - margin.right,
     height = 540 - margin.top - margin.bottom,
     height2 = 540 - margin2.top - margin2.bottom;
@@ -277,9 +312,21 @@ context.append("text")
 // SUB-FUNCTION DEFINITIONS:
 // This function executes when the brush is used to redefine the x-axis scale.
 function brushed() {
+  // reset x axis domain based on brush extent
   x.domain(brush.empty() ? x2.domain() : brush.extent());
+  
+  // update lines on chart based on new x domain. (note: x domain is built into line definition).
   focus.select(".line").attr("d", line);
   focus.select(".line2").attr("d", line2);
+  
+  // Update line text labels based on new x domain. The interp1 function is used so text labels follow 
+  // the end of their corresponding line as it moves based on the data range.
+  focus.select("#line-label").attr("y",  y(interp1(data_store.map(function(d) { return d.year; }), 
+	data_store.map(function(d) { return d.cost_per_kW_NI; }), x.domain()[1])));
+  focus.select("#line2-label").attr("y",  y(interp1(data_store.map(function(d) { return d.year; }), 
+	data_store.map(function(d) { return d.cost_per_kW_Incentive; }), x.domain()[1])));
+	
+  // Update x-axis based on brush extent / new data range.
   focus.select(".x.axis").call(xAxis);
 }
 
@@ -290,6 +337,76 @@ function type(d) {
   d.cost_per_kW_NI = +d.cost_per_kW_NI;
   d.cost_per_kW_Incentive = +d.cost_per_kW_Incentive;
   return d;
+}
+
+
+// Custom function to perform an interpolation between two arrays of number.
+// Same concept as interp1 function in MATLAB
+function interp1(array_X, array_Y, X_test) {
+  // > You can think of this function as performing a linear interpolation 
+  // on a line chart.  array_X and array_Y are equal length vectors that
+  // define data points on a chart.  X_test is an X data point somewhere in
+  // between the chart data points, and we want to interpolate a Y value that 
+  // corresponds to X_test.
+  // > It is assumed array_X is a sorted array (ascending or descending) order.
+  // > array_Y can be in any order, as these are just data points
+  // in a different dimension that correspond to each data point
+  // in array_X.
+  // > X_test is a single data point in the X dimension that needs to 
+  // be interpolated. This function finds the location of X between 
+  // data points in array_X, and then calculates the corresponding
+  // Y_result based on linear interpolation in array_Y.
+  
+  // Initialize output variable
+  Y_result = NaN;
+  
+  // CHECK THAT INPUTS ARE VALID:
+  error_flag = false;
+  
+  // Check if inputs are defined
+  if (array_X === undefined || array_Y === undefined || X_test === undefined) error_flag = true;
+  
+  if (!error_flag) {
+	  // Check if array_X and array_Y are the same length
+	  if (array_X.length != array_Y.length) error_flag = true;
+	  
+	  // Check if both array_X and array_Y have at least two elements
+	  if (array_X.length < 2) error_flag = true;
+	  
+	  // Check if array_X is sorted in descending order. If so, reverse input arrays so function still works.
+	  // Interpolation algorithm is designed to work on ascending arrays only.
+	  if (array_X[1] - array_X[0] < 0) { array_X.reverse(); array_Y.reverse(); };
+	  
+	  // Check if X_test is within the range of array_X.  This function is only designed to perform data point,
+	  // interpolation. It does not extrapolate data points!
+	  if (!error_flag && (X_test + 0.00001 < array_X[0] || X_test - 0.00001 > array_X[array_X.length - 1] )) error_flag = true ;
+  }
+  
+  // IF INPUTS ARE GOOD, CALCULATE RESULTS:
+  if (!error_flag) {
+	  // Loop through each element of array_X to find which data
+	  // points X_test is between. Find index of this location.
+	  var index;
+	  for (index = 0; array_X[index] <= X_test; index++) {};
+	  
+	  // Small correction for boundary conditions. If index is 0 or 1 past end
+	  // of array, input X_test may be right at the boundary of the domain defined
+	  // by array_X, but index value will be past the range of acceptable values for
+	  // the algorithm. We want to make sure the interpolation function works with 
+	  // these values as well.
+	  if (index == 0) index++;
+	  if (index == array_X.length) index--;
+	  
+	  // Interpolation formula. index defines high valued reference data point, and index - 1 
+	  // defines low valued reference data point.
+	  Y_result = ((X_test - array_X[index - 1])/(array_X[index] - array_X[index - 1])) * 
+		  (array_Y[index] - array_Y[index - 1]) + array_Y[index - 1];
+		  
+  } else {
+	console.log("WARNING: Invalid inputs into interp1 function");
+  }
+
+  return Y_result;
 }
 
 // END OF MAIN WEBPAGE SCRIPT
