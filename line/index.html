@@ -386,8 +386,29 @@ function interp1(array_X, array_Y, X_test) {
   if (!error_flag) {
 	  // Loop through each element of array_X to find which data
 	  // points X_test is between. Find index of this location.
-	  var index;
+
+	  // Binary search algorithm to locate which data points X_in is located between
+	  var highVal = array_X.length - 1;
+	  var lowVal = 1;
+	  var index = Math.ceil((array_X.length - 1) / 2);
+	  while( !(array_X[index] >= X_test && array_X[index - 1] <= X_test) ) {
+		if (array_X[index] > X_test) {
+			highVal = index;
+		} else {
+			lowVal = index;
+		}
+		index = Math.ceil((highVal - lowVal)/2 + lowVal);
+		
+		/*
+		// not sure if needed, but for small intervals I was worried that index and highval would be equal when binary
+		if (index == highVal) { index-- }; 
+		*/
+	  }
+	  
+	  /*
+	  // Old search algorithm
 	  for (index = 0; array_X[index] <= X_test; index++) {};
+	  */
 	  
 	  // Small correction for boundary conditions. If index is 0 or 1 past end
 	  // of array, input X_test may be right at the boundary of the domain defined
