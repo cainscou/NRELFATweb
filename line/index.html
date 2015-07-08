@@ -389,8 +389,8 @@ function interp1(array_X, array_Y, X_test) {
 
 	  // Binary search algorithm to locate which data points X_in is located between
 	  var highVal = array_X.length - 1;
-	  var lowVal = 1;
-	  var index = Math.ceil((array_X.length - 1) / 2);
+	  var lowVal = 0;
+	  var index = Math.ceil((array_X.length - 1) / 2 + lowVal);
 	  while( !(array_X[index] >= X_test && array_X[index - 1] <= X_test) ) {
 		if (array_X[index] > X_test) {
 			highVal = index;
