@@ -108,12 +108,10 @@ noscript {
 
 <!-- Main WebPage Script -->
 <script>
-
 // AJAX CALL FOR DATA DOWNLOAD, AND ADDING DATA INTO THE CHART:
 // While the data is downloading, the next block of code after the d3.csv command will 
 // execute.  Then, when all data has downloaded, the code inside the function passed 
 // as an argument to d3.csv will execute.
-
 d3.csv("cdp8_condensed.csv", type, function(error, data) {
 
   /*
@@ -145,8 +143,6 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
 		.attr("d", function(d) { return d(data); } )
 		.datum(data)
 		;
-	
-	
   /*
   focus.append("path")
       .datum(data)
@@ -160,6 +156,17 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
 	  */ 
 	  
   // Add text labels to each data line
+  d3.select(".focus").selectAll("text")
+		.data(data_labels)
+	.enter().append("text")
+		.attr("class", "data-label")
+		.attr("id", function(d, i) {return "line" + (i+1) + "-label"; })
+		.attr("text-anchor", "start")
+		.attr("y",  y(data[data.length - 1].cost_per_kW_NI))
+		.attr("x", width + 5)
+		.attr("dy", ".71em")
+		.text(function(d) { return d;} );
+  /*
   focus.append("text")
 	.attr("class", "data-label")
 	.attr("id", "line-label")
@@ -178,8 +185,17 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
 	.attr("x", width + 5)
 	.attr("dy", ".71em")
 	.text("With Incentives");
-	
-
+	*/
+  // Draw y - axis label
+  focus.append("text")
+	 .attr("class", "axis-label")
+	 .attr("transform", "rotate(-90)")
+	 .attr("text-anchor", "end")
+	 .attr("y", -margin.left+10)
+	 .attr("x", -7)
+	 .attr("dy", ".71em")
+	 .text("Cost in $(2010) / kW");
+  
   // Draw the x-axis onto the main upper chart
   focus.append("g")
       .attr("class", "x axis")
@@ -267,6 +283,14 @@ var lines = [
 		.y(function(d) { return y(d.cost_per_kW_Incentive); })
 ];
 
+// Define text labels for each line on the main chart. These should be in the same order as the functions in the lines variable.
+data_labels = [
+	'Without Incentive',
+	'With Incentive'
+	];
+	
+
+
 /*
 var line = d3.svg.line()
     .x(function(d) { return x(d.year); })
@@ -312,15 +336,6 @@ svg.append("defs").append("clipPath")
 var focus = svg.append("g")
     .attr("class", "focus")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-	
-focus.append("text")
-  .attr("class", "axis-label")
-  .attr("transform", "rotate(-90)")
-  .attr("text-anchor", "end")
-  .attr("y", -margin.left+10)
-  .attr("x", -7)
-  .attr("dy", ".71em")
-  .text("Cost in $(2010) / kW");
 
 // Append g tag to define lower sub chart chart with filters.
 var context = svg.append("g")
