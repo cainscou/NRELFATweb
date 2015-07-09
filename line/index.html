@@ -31,28 +31,12 @@ svg {
   clip-path: url(#clip);
 }
 
-#area1 {
-  fill: steelblue;
-}
-
-#area2 {
-  fill: firebrick;
-}
-
 .line {
   fill: none;
   stroke: steelblue;
   stroke-width: 1.5px;
   clip-path: url(#clip);
   opacity: 0.9;
-}
-
-#line1 {
-  stroke: steelblue;
-}
-
-#line2 {
-  stroke: red;
 }
 
 .axis path,
@@ -112,8 +96,6 @@ noscript {
 
 <!-- Main WebPage Script -->
 <script>
-// Initialize container for d3 data outside d3.csv function, so data is accessible globally.
-var data_store;
 
 // AJAX CALL FOR DATA DOWNLOAD, AND ADDING DATA INTO THE CHART:
 // While the data is downloading, the next block of code after the d3.csv command will 
@@ -121,22 +103,24 @@ var data_store;
 // as an argument to d3.csv will execute.
 d3.csv("cdp8_condensed.csv", type, function(error, data) {
 
-
 // DEFINE EACH LINE TO BE DRAWN ON THE CHART BELOW. 
 // Each line is an object in the array. This is in JSON format.
 var lines = [
+
 	// #line1 info
 	{
 	"lineDef": d3.svg.line()
 					.x(function(d) { return x(d.year); })
 					.y(function(d) { return y(d.cost_per_kW_NI); }),
 	"textLabel": 'Without Incentive',
-	"initialTextYPos": function() { return data[data.length - 1].cost_per_kW_NI; },
+	"initialTextYPos": data.map(function(d) { return d.cost_per_kW_NI; }), 
 	"areaDef": d3.svg.area()
 					.interpolate("monotone")
 					.x(function(d) { return x2(d.year); })
 					.y0(height2)
-					.y1(function(d) { return y2(d.cost_per_kW_NI); })
+					.y1(function(d) { return y2(d.cost_per_kW_NI); }),
+	"lineColor": "steelblue",
+	"areaColor": "steelblue"
 	},
 		
 	// #line2 info
@@ -145,29 +129,17 @@ var lines = [
 					.x(function(d) { return x(d.year); })
 					.y(function(d) { return y(d.cost_per_kW_Incentive); }),
 	"textLabel": 'With Incentive',
-	"initialTextYPos": function() { return data[data.length - 1].cost_per_kW_Incentive; },
+	"initialTextYPos": data.map(function(d) { return d.cost_per_kW_Incentive; }), 
 	"areaDef": d3.svg.area()
 					.interpolate("monotone")
 					.x(function(d) { return x2(d.year); })
 					.y0(height2)
-					.y1(function(d) { return y2(d.cost_per_kW_Incentive); })
-
+					.y1(function(d) { return y2(d.cost_per_kW_Incentive); }),
+	"lineColor": "red",
+	"areaColor": "firebrick"
 	}
-];
-// Define function to construct curve on lower sub chart w brush filter
-var area = d3.svg.area()
-    .interpolate("monotone")
-    .x(function(d) { return x2(d.year); })
-    .y0(height2)
-    .y1(function(d) { return y2(d.cost_per_kW_NI); });
 	
-var area2 = d3.svg.area()
-    .interpolate("monotone")
-    .x(function(d) { return x2(d.year); })
-    .y0(height2)
-    .y1(function(d) { return y2(d.cost_per_kW_Incentive); });
-
-
+];
 
   // Defines some error handling if data file can not be loaded.
   if (error) { 
@@ -181,13 +153,14 @@ var area2 = d3.svg.area()
   x2.domain(x.domain());
   y2.domain(y.domain());
 	  
-  // Draw the data curve line into the main upper chart
+  // Draw the data curve lines into the main upper chart
   d3.select(".focus").selectAll("path")
 		.data(lines)
 	.enter().append("path")
 		.attr("class", "line")
 		.attr("id", function(d, i) { return "line" + (i + 1);} )
 		.attr("d", function(d) { return d.lineDef(data); } )
+		.attr("style", function(d) { return "stroke: " + d.lineColor + ";" ;})
 		.datum(data)
 		;
 	  
@@ -198,7 +171,8 @@ var area2 = d3.svg.area()
 		.attr("class", "data-label")
 		.attr("id", function(d, i) {return "line" + (i+1) + "-label"; })
 		.attr("text-anchor", "start")
-		.attr("y", function(d) { return y(d.initialTextYPos()); } )
+		.attr("y", function(d) { return y(interp1(data.map(function(d) { return d.year; }), 
+			d.initialTextYPos, x.domain()[1])); } )
 		.attr("x", width + 5)
 		.attr("dy", ".71em")
 		.text(function(d) { return d.textLabel;} );
@@ -224,26 +198,16 @@ var area2 = d3.svg.area()
       .attr("class", "y axis")
       .call(yAxis);
 
-  // Draw the data curve into the lower sub chart with brush filter
+  // Draw the data curves into the lower sub chart with brush filter
   d3.select(".context").selectAll(".area")
 		.data(lines)
 	.enter().append("path")
 		.attr("class", "area")
 		.attr("id", function(d, i) { return "area" + (i + 1);} )
 		.attr("d", function(d) { return d.areaDef(data); } )
+		.attr("style", function(d) { return "stroke: " + d.areaColor + ";" ;})
 		.datum(data)
 		; 
-   /*
-  context.append("path")
-      .datum(data)
-      .attr("class", "area")
-      .attr("d", area);
-	  
-  context.append("path")
-    .datum(data)
-    .attr("class", "area2")
-    .attr("d", area2);
-	*/
 
   // Draw the x-axis onto the lower sub chart with brush filters
   context.append("g")
@@ -262,9 +226,6 @@ var area2 = d3.svg.area()
     .selectAll("rect")
       .attr("y", -6)
       .attr("height", height2 + 7);
-	  
-  // save copy of data for use outside of asynchronous call
-  data_store = data;
   
 // SUB-FUNCTION DEFINITIONS:
 
@@ -282,10 +243,17 @@ var area2 = d3.svg.area()
 	  
 	  // Update line text labels based on new x domain. The interp1 function is used so text labels follow 
 	  // the end of their corresponding line as it moves based on the data range.
+	  d3.select(".focus").selectAll(".data-label")
+			.data(lines)
+			.attr("y",  function(d) { return y(interp1(data.map(function(d) { return d.year; }), 
+				d.initialTextYPos, x.domain()[1])); });
+	  
+	  /*
 	  focus.select("#line1-label").attr("y",  y(interp1(data.map(function(d) { return d.year; }), 
 		data.map(function(d) { return d.cost_per_kW_NI; }), x.domain()[1])));
 	  focus.select("#line2-label").attr("y",  y(interp1(data.map(function(d) { return d.year; }), 
 		data.map(function(d) { return d.cost_per_kW_Incentive; }), x.domain()[1])));
+	  */
 		
 	  // Update x-axis based on brush extent / new data range.
 	  focus.select(".x.axis").call(xAxis);
