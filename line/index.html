@@ -27,15 +27,16 @@ svg {
 }
 
 .area {
-  fill: steelblue;
   opacity: 0.9;
   clip-path: url(#clip);
 }
 
-.area2 {
+#area1 {
+  fill: steelblue;
+}
+
+#area2 {
   fill: firebrick;
-  opacity: 0.9;
-  clip-path: url(#clip);
 }
 
 .line {
@@ -131,6 +132,11 @@ var lines = [
 					.y(function(d) { return y(d.cost_per_kW_NI); }),
 	"textLabel": 'Without Incentive',
 	"initialTextYPos": function() { return data[data.length - 1].cost_per_kW_NI; },
+	"areaDef": d3.svg.area()
+					.interpolate("monotone")
+					.x(function(d) { return x2(d.year); })
+					.y0(height2)
+					.y1(function(d) { return y2(d.cost_per_kW_NI); })
 	},
 		
 	// #line2 info
@@ -140,9 +146,28 @@ var lines = [
 					.y(function(d) { return y(d.cost_per_kW_Incentive); }),
 	"textLabel": 'With Incentive',
 	"initialTextYPos": function() { return data[data.length - 1].cost_per_kW_Incentive; },
+	"areaDef": d3.svg.area()
+					.interpolate("monotone")
+					.x(function(d) { return x2(d.year); })
+					.y0(height2)
+					.y1(function(d) { return y2(d.cost_per_kW_Incentive); });
 
 	}
 ];
+// Define function to construct curve on lower sub chart w brush filter
+var area = d3.svg.area()
+    .interpolate("monotone")
+    .x(function(d) { return x2(d.year); })
+    .y0(height2)
+    .y1(function(d) { return y2(d.cost_per_kW_NI); });
+	
+var area2 = d3.svg.area()
+    .interpolate("monotone")
+    .x(function(d) { return x2(d.year); })
+    .y0(height2)
+    .y1(function(d) { return y2(d.cost_per_kW_Incentive); });
+
+
 
   // Defines some error handling if data file can not be loaded.
   if (error) { 
@@ -200,6 +225,15 @@ var lines = [
       .call(yAxis);
 
   // Draw the data curve into the lower sub chart with brush filter
+  d3.select(".focus").selectAll(".area")
+		.data(lines)
+	.enter().append("path")
+		.attr("class", "area")
+		.attr("id", function(d, i) { return "area" + (i + 1);} )
+		.attr("d", function(d) { return d.areaDef(data); } )
+		.datum(data)
+		; 
+   /*
   context.append("path")
       .datum(data)
       .attr("class", "area")
@@ -209,6 +243,7 @@ var lines = [
     .datum(data)
     .attr("class", "area2")
     .attr("d", area2);
+	*/
 
   // Draw the x-axis onto the lower sub chart with brush filters
   context.append("g")
@@ -283,18 +318,6 @@ var xAxis = d3.svg.axis().scale(x).orient("bottom"),
     xAxis2 = d3.svg.axis().scale(x2).orient("bottom"),
     yAxis = d3.svg.axis().scale(y).orient("left");
 
-// Define function to construct curve on lower sub chart w brush filter
-var area = d3.svg.area()
-    .interpolate("monotone")
-    .x(function(d) { return x2(d.year); })
-    .y0(height2)
-    .y1(function(d) { return y2(d.cost_per_kW_NI); });
-	
-var area2 = d3.svg.area()
-    .interpolate("monotone")
-    .x(function(d) { return x2(d.year); })
-    .y0(height2)
-    .y1(function(d) { return y2(d.cost_per_kW_Incentive); });
 
 	
 // THIS SECTION BEGINS CONSTRUCTING A SKELETON FOR THE CHART:
