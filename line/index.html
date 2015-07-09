@@ -28,11 +28,13 @@ svg {
 
 .area {
   fill: steelblue;
+  opacity: 0.9;
   clip-path: url(#clip);
 }
 
 .area2 {
   fill: firebrick;
+  opacity: 0.9;
   clip-path: url(#clip);
 }
 
@@ -41,6 +43,7 @@ svg {
   stroke: steelblue;
   stroke-width: 1.5px;
   clip-path: url(#clip);
+  opacity: 0.9;
 }
 
 #line1 {
@@ -108,19 +111,38 @@ noscript {
 
 <!-- Main WebPage Script -->
 <script>
+// Initialize container for d3 data outside d3.csv function, so data is accessible globally.
+var data_store;
+
 // AJAX CALL FOR DATA DOWNLOAD, AND ADDING DATA INTO THE CHART:
 // While the data is downloading, the next block of code after the d3.csv command will 
 // execute.  Then, when all data has downloaded, the code inside the function passed 
 // as an argument to d3.csv will execute.
 d3.csv("cdp8_condensed.csv", type, function(error, data) {
 
-  /*
-  // TEST CODE - REMOVE
-  var X = data.map(function(d) { return d.year; });
-  var Y = data.map(function(d) { return d.cost_per_kW_NI; });
-  var X_in = new Date();
-  X_in.setFullYear(2011, 05, 01);
-  */
+
+// DEFINE EACH LINE TO BE DRAWN ON THE CHART BELOW. 
+// Each line is an object in the array. This is in JSON format.
+var lines = [
+	// #line1 info
+	{
+	"lineDef": d3.svg.line()
+					.x(function(d) { return x(d.year); })
+					.y(function(d) { return y(d.cost_per_kW_NI); }),
+	"textLabel": 'Without Incentive',
+	"initialTextYPos": function() { return data[data.length - 1].cost_per_kW_NI; },
+	},
+		
+	// #line2 info
+	{
+	"lineDef": d3.svg.line()
+					.x(function(d) { return x(d.year); })
+					.y(function(d) { return y(d.cost_per_kW_Incentive); }),
+	"textLabel": 'With Incentive',
+	"initialTextYPos": function() { return data[data.length - 1].cost_per_kW_Incentive; },
+
+	}
+];
 
   // Defines some error handling if data file can not be loaded.
   if (error) { 
@@ -140,52 +162,22 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
 	.enter().append("path")
 		.attr("class", "line")
 		.attr("id", function(d, i) { return "line" + (i + 1);} )
-		.attr("d", function(d) { return d(data); } )
+		.attr("d", function(d) { return d.lineDef(data); } )
 		.datum(data)
 		;
-  /*
-  focus.append("path")
-      .datum(data)
-      .attr("class", "line")
-      .attr("d", line);
-	  
-  focus.append("path")
-      .datum(data)
-      .attr("class", "line2")
-      .attr("d", line2);
-	  */ 
 	  
   // Add text labels to each data line
   d3.select(".focus").selectAll("text")
-		.data(data_labels)
+		.data(lines)
 	.enter().append("text")
 		.attr("class", "data-label")
 		.attr("id", function(d, i) {return "line" + (i+1) + "-label"; })
 		.attr("text-anchor", "start")
-		.attr("y",  y(data[data.length - 1].cost_per_kW_NI))
+		.attr("y", function(d) { return y(d.initialTextYPos()); } )
 		.attr("x", width + 5)
 		.attr("dy", ".71em")
-		.text(function(d) { return d;} );
-  /*
-  focus.append("text")
-	.attr("class", "data-label")
-	.attr("id", "line-label")
-	.attr("text-anchor", "start")
-	.attr("y",  y(data[data.length - 1].cost_per_kW_NI))
-	.attr("x", width + 5)
-	.attr("dy", ".71em")
-	.text("Without Incentives");
+		.text(function(d) { return d.textLabel;} );
 
-  // Add text labels to each data line
-  focus.append("text")
-	.attr("class", "data-label")
-	.attr("id", "line2-label")
-	.attr("text-anchor", "start")
-	.attr("y",  y(data[data.length - 1].cost_per_kW_Incentive))
-	.attr("x", width + 5)
-	.attr("dy", ".71em")
-	.text("With Incentives");
-	*/
   // Draw y - axis label
   focus.append("text")
 	 .attr("class", "axis-label")
@@ -225,6 +217,10 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
       .call(xAxis2);
 
   // Adds the interactive brush into the lower sub chart so data can be filtered
+  var brush = d3.svg.brush()
+		.x(x2)
+		.on("brush", brushed);
+		
   context.append("g")
       .attr("class", "x brush")
       .call(brush)
@@ -234,14 +230,37 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
 	  
   // save copy of data for use outside of asynchronous call
   data_store = data;
+  
+// SUB-FUNCTION DEFINITIONS:
+
+	// This function executes when the brush is used to redefine the x-axis scale.
+	function brushed() {
+	  // reset x axis domain based on brush extent
+	  x.domain(brush.empty() ? x2.domain() : brush.extent());
+	  
+	  // update lines on chart based on new x domain. (note: x domain is built into line definition).
+		d3.select(".focus").selectAll("path")
+			.data(lines)
+			.attr("d", function(d) { return d.lineDef(data); } )
+			.datum(data)
+			;
+	  
+	  // Update line text labels based on new x domain. The interp1 function is used so text labels follow 
+	  // the end of their corresponding line as it moves based on the data range.
+	  focus.select("#line1-label").attr("y",  y(interp1(data.map(function(d) { return d.year; }), 
+		data.map(function(d) { return d.cost_per_kW_NI; }), x.domain()[1])));
+	  focus.select("#line2-label").attr("y",  y(interp1(data.map(function(d) { return d.year; }), 
+		data.map(function(d) { return d.cost_per_kW_Incentive; }), x.domain()[1])));
+		
+	  // Update x-axis based on brush extent / new data range.
+	  focus.select(".x.axis").call(xAxis);
+	}
+  
 }); // end of d3.csv asynchronous call
 
 
 // THIS SECTION INITIALIZES VARIABLES THAT DEFINE THE CHART:
 // This runs immediately after the data download in d3.csv begins
-
-// Initialize container for d3 data outside d3.csv function, so data is accessible globally.
-var data_store;
 
 // Defines chart dimensions
 var margin = {top: 10, right: 150, bottom: 135, left: 70},
@@ -264,43 +283,6 @@ var xAxis = d3.svg.axis().scale(x).orient("bottom"),
     xAxis2 = d3.svg.axis().scale(x2).orient("bottom"),
     yAxis = d3.svg.axis().scale(y).orient("left");
 
-// Define d3 brush
-var brush = d3.svg.brush()
-    .x(x2)
-    .on("brush", brushed);
-
-// Define function to draw a line on the main chart	
-
-var lines = [
-	// #line1
-	d3.svg.line()
-		.x(function(d) { return x(d.year); })
-		.y(function(d) { return y(d.cost_per_kW_NI); }),
-		
-	// #line2
-	d3.svg.line()
-		.x(function(d) { return x(d.year); })
-		.y(function(d) { return y(d.cost_per_kW_Incentive); })
-];
-
-// Define text labels for each line on the main chart. These should be in the same order as the functions in the lines variable.
-data_labels = [
-	'Without Incentive',
-	'With Incentive'
-	];
-	
-
-
-/*
-var line = d3.svg.line()
-    .x(function(d) { return x(d.year); })
-    .y(function(d) { return y(d.cost_per_kW_NI); });
-	
-var line2 = d3.svg.line()
-    .x(function(d) { return x(d.year); })
-    .y(function(d) { return y(d.cost_per_kW_Incentive); });
-*/	
-
 // Define function to construct curve on lower sub chart w brush filter
 var area = d3.svg.area()
     .interpolate("monotone")
@@ -314,8 +296,6 @@ var area2 = d3.svg.area()
     .y0(height2)
     .y1(function(d) { return y2(d.cost_per_kW_Incentive); });
 
-
-	
 	
 // THIS SECTION BEGINS CONSTRUCTING A SKELETON FOR THE CHART:
 // The skeleton will be filled in once the rest of the data loads.
@@ -341,7 +321,8 @@ var focus = svg.append("g")
 var context = svg.append("g")
     .attr("class", "context")
     .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
-	
+
+// Append label to x-axis	
 context.append("text")
   .attr("class", "axis-label")
   .attr("text-anchor", "end")
@@ -350,36 +331,8 @@ context.append("text")
   .attr("dy", ".71em")
   .text("Year");	
 
-  
-// SUB-FUNCTION DEFINITIONS:
 
-// This function executes when the brush is used to redefine the x-axis scale.
-function brushed() {
-  // reset x axis domain based on brush extent
-  x.domain(brush.empty() ? x2.domain() : brush.extent());
-  
-  // update lines on chart based on new x domain. (note: x domain is built into line definition).
-	d3.select(".focus").selectAll("path")
-		.data(lines)
-		.attr("d", function(d) { return d(data_store); } )
-		.datum(data_store)
-		;
-  /*
-  // Old method to update lines
-  focus.select(".line").attr("d", line);
-  focus.select(".line2").attr("d", line2);
-  */
-  
-  // Update line text labels based on new x domain. The interp1 function is used so text labels follow 
-  // the end of their corresponding line as it moves based on the data range.
-  focus.select("#line-label").attr("y",  y(interp1(data_store.map(function(d) { return d.year; }), 
-	data_store.map(function(d) { return d.cost_per_kW_NI; }), x.domain()[1])));
-  focus.select("#line2-label").attr("y",  y(interp1(data_store.map(function(d) { return d.year; }), 
-	data_store.map(function(d) { return d.cost_per_kW_Incentive; }), x.domain()[1])));
-	
-  // Update x-axis based on brush extent / new data range.
-  focus.select(".x.axis").call(xAxis);
-}
+// SUB-FUNCTION DEFINITIONS:
 
 // This function executes when data is initially loaded to 
 // convert the variable data types from strings.
@@ -389,7 +342,6 @@ function type(d) {
   d.cost_per_kW_Incentive = +d.cost_per_kW_Incentive;
   return d;
 }
-
 
 // Custom function to perform an interpolation between two arrays of number.
 // Same concept as interp1 function in MATLAB
