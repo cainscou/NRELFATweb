@@ -43,11 +43,12 @@ svg {
   clip-path: url(#clip);
 }
 
-.line2 {
-  fill: none;
+#line1 {
+  stroke: steelblue;
+}
+
+#line2 {
   stroke: red;
-  stroke-width: 1.5px;
-  clip-path: url(#clip);
 }
 
 .axis path,
@@ -136,6 +137,17 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
   y2.domain(y.domain());
 	  
   // Draw the data curve line into the main upper chart
+  d3.select(".focus").selectAll("path")
+		.data(lines)
+	.enter().append("path")
+		.attr("class", "line")
+		.attr("id", function(d, i) { return "line" + (i + 1);} )
+		.attr("d", function(d) { return d(data); } )
+		.datum(data)
+		;
+	
+	
+  /*
   focus.append("path")
       .datum(data)
       .attr("class", "line")
@@ -145,6 +157,7 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
       .datum(data)
       .attr("class", "line2")
       .attr("d", line2);
+	  */ 
 	  
   // Add text labels to each data line
   focus.append("text")
@@ -241,6 +254,20 @@ var brush = d3.svg.brush()
     .on("brush", brushed);
 
 // Define function to draw a line on the main chart	
+
+var lines = [
+	// #line1
+	d3.svg.line()
+		.x(function(d) { return x(d.year); })
+		.y(function(d) { return y(d.cost_per_kW_NI); }),
+		
+	// #line2
+	d3.svg.line()
+		.x(function(d) { return x(d.year); })
+		.y(function(d) { return y(d.cost_per_kW_Incentive); })
+];
+
+/*
 var line = d3.svg.line()
     .x(function(d) { return x(d.year); })
     .y(function(d) { return y(d.cost_per_kW_NI); });
@@ -248,7 +275,7 @@ var line = d3.svg.line()
 var line2 = d3.svg.line()
     .x(function(d) { return x(d.year); })
     .y(function(d) { return y(d.cost_per_kW_Incentive); });
-	
+*/	
 
 // Define function to construct curve on lower sub chart w brush filter
 var area = d3.svg.area()
@@ -310,14 +337,23 @@ context.append("text")
 
   
 // SUB-FUNCTION DEFINITIONS:
+
 // This function executes when the brush is used to redefine the x-axis scale.
 function brushed() {
   // reset x axis domain based on brush extent
   x.domain(brush.empty() ? x2.domain() : brush.extent());
   
   // update lines on chart based on new x domain. (note: x domain is built into line definition).
+	d3.select(".focus").selectAll("path")
+		.data(lines)
+		.attr("d", function(d) { return d(data_store); } )
+		.datum(data_store)
+		;
+  /*
+  // Old method to update lines
   focus.select(".line").attr("d", line);
   focus.select(".line2").attr("d", line2);
+  */
   
   // Update line text labels based on new x domain. The interp1 function is used so text labels follow 
   // the end of their corresponding line as it moves based on the data range.
