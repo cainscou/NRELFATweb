@@ -150,7 +150,7 @@ var lines = [
 					.interpolate("monotone")
 					.x(function(d) { return x2(d.year); })
 					.y0(height2)
-					.y1(function(d) { return y2(d.cost_per_kW_Incentive); });
+					.y1(function(d) { return y2(d.cost_per_kW_Incentive); })
 
 	}
 ];
@@ -225,7 +225,7 @@ var area2 = d3.svg.area()
       .call(yAxis);
 
   // Draw the data curve into the lower sub chart with brush filter
-  d3.select(".focus").selectAll(".area")
+  d3.select(".context").selectAll(".area")
 		.data(lines)
 	.enter().append("path")
 		.attr("class", "area")
