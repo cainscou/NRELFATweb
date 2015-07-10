@@ -47,7 +47,7 @@ svg {
   shape-rendering: crispEdges;
 }
 
-.axis-label {
+.axisLabel {
   font-size: 1.3em;
   
 }
@@ -98,11 +98,9 @@ noscript {
 <!-- Main WebPage Script -->
 <script>
 
-
 // Put graphing script into function call to limit variable scopes.
 NRELWebFat_Line();
 function NRELWebFat_Line() {
-
 
 // AJAX CALL FOR DATA DOWNLOAD, AND ADDING DATA INTO THE CHART:
 // While the data is downloading, the next block of code after the d3.csv command will 
@@ -200,8 +198,8 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
   d3.select(".focus").selectAll("text")
 		.data(lines)
 	.enter().append("text")
-		.attr("class", "data-label")
-		.attr("id", function(d, i) {return "line" + (i+1) + "-label"; })
+		.attr("class", "dataLabel")
+		.attr("id", function(d, i) {return "lineLabel" + (i+1); })
 		.attr("text-anchor", "start")
 		.attr("y", function(d) { return y(interp1(data.map(function(d) { return d.year; }), 
 			d.yData, x.domain()[1])); } )
@@ -211,7 +209,7 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
 
   // Draw y - axis label
   focus.append("text")
-	 .attr("class", "axis-label")
+	 .attr("class", "axisLabel")
 	 .attr("transform", "rotate(-90)")
 	 .attr("text-anchor", "end")
 	 .attr("y", -margin.left+10)
@@ -276,7 +274,7 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
 	  
 	  // Update line text labels based on new x domain. The interp1 function is used so text labels follow 
 	  // the end of their corresponding line as it moves based on the data range.
-	  d3.select(".focus").selectAll(".data-label")
+	  d3.select(".focus").selectAll(".dataLabel")
 			.data(lines)
 			.attr("y",  function(d) { return y(interp1(data.map(function(d) { return d.year; }), 
 				d.yData, x.domain()[1])); });
@@ -349,7 +347,7 @@ var context = svg.append("g")
 
 // Append label to x-axis	
 context.append("text")
-  .attr("class", "axis-label")
+  .attr("class", "axisLabel")
   .attr("text-anchor", "end")
   .attr("y", height2 + margin2.bottom - 40)
   .attr("x", width - 7)
@@ -370,60 +368,60 @@ function type(d) {
 
 // Custom function to perform an interpolation between two arrays of number.
 // Same concept as interp1 function in MATLAB
-function interp1(array_X, array_Y, X_test) {
+function interp1(arrayX, arrayY, xTest) {
   // > You can think of this function as performing a linear interpolation 
-  // on a line chart.  array_X and array_Y are equal length vectors that
-  // define data points on a chart.  X_test is an X data point somewhere in
+  // on a line chart.  arrayX and arrayY are equal length vectors that
+  // define data points on a chart.  xTest is an X data point somewhere in
   // between the chart data points, and we want to interpolate a Y value that 
-  // corresponds to X_test.
-  // > It is assumed array_X is a sorted array (ascending or descending) order.
-  // > array_Y can be in any order, as these are just data points
+  // corresponds to xTest.
+  // > It is assumed arrayX is a sorted array (ascending or descending) order.
+  // > arrayY can be in any order, as these are just data points
   // in a different dimension that correspond to each data point
-  // in array_X.
-  // > X_test is a single data point in the X dimension that needs to 
+  // in arrayX.
+  // > xTest is a single data point in the X dimension that needs to 
   // be interpolated. This function finds the location of X between 
-  // data points in array_X, and then calculates the corresponding
-  // Y_result based on linear interpolation in array_Y.
+  // data points in arrayX, and then calculates the corresponding
+  // yResult based on linear interpolation in arrayY.
   
   // Initialize function variables
-  var Y_result = NaN; // output value
+  var yResult = NaN; // output value
   var errorFlag = false; // flag that indicates invalid input values  
   var highVal, lowVal, index;
   
   
   // CHECK THAT INPUTS ARE VALID:
-  error_flag = false;
+  errorFlag = false;
   
   // Check if inputs are defined
-  if (array_X === undefined || array_Y === undefined || X_test === undefined) error_flag = true;
+  if (arrayX === undefined || arrayY === undefined || xTest === undefined) errorFlag = true;
   
-  if (!error_flag) {
-	  // Check if array_X and array_Y are the same length
-	  if (array_X.length != array_Y.length) error_flag = true;
+  if (!errorFlag) {
+	  // Check if arrayX and arrayY are the same length
+	  if (arrayX.length != arrayY.length) errorFlag = true;
 	  
-	  // Check if both array_X and array_Y have at least two elements
-	  if (array_X.length < 2) error_flag = true;
+	  // Check if both arrayX and arrayY have at least two elements
+	  if (arrayX.length < 2) errorFlag = true;
 	  
-	  // Check if array_X is sorted in descending order. If so, reverse input arrays so function still works.
+	  // Check if arrayX is sorted in descending order. If so, reverse input arrays so function still works.
 	  // Interpolation algorithm is designed to work on ascending arrays only.
-	  if (array_X[1] - array_X[0] < 0) { array_X.reverse(); array_Y.reverse(); };
+	  if (arrayX[1] - arrayX[0] < 0) { arrayX.reverse(); arrayY.reverse(); };
 	  
-	  // Check if X_test is within the range of array_X.  This function is only designed to perform data point,
+	  // Check if xTest is within the range of arrayX.  This function is only designed to perform data point,
 	  // interpolation. It does not extrapolate data points!
-	  if (!error_flag && (X_test + 0.00001 < array_X[0] || X_test - 0.00001 > array_X[array_X.length - 1] )) error_flag = true ;
+	  if (!errorFlag && (xTest + 0.00001 < arrayX[0] || xTest - 0.00001 > arrayX[arrayX.length - 1] )) errorFlag = true ;
   }
   
   // IF INPUTS ARE GOOD, CALCULATE RESULTS:
-  if (!error_flag) {
-	  // Loop through each element of array_X to find which data
-	  // points X_test is between. Find index of this location.
+  if (!errorFlag) {
+	  // Loop through each element of arrayX to find which data
+	  // points xTest is between. Find index of this location.
 
-	  // Binary search algorithm to locate which data points X_in is located between
-	  highVal = array_X.length - 1;
+	  // Binary search algorithm to locate which data points xTest is located between in arrayX
+	  highVal = arrayX.length - 1;
 	  lowVal = 0;
-	  index = Math.ceil((array_X.length - 1) / 2 + lowVal);
-	  while( !(array_X[index] >= X_test && array_X[index - 1] <= X_test) ) {
-		if (array_X[index] > X_test) {
+	  index = Math.ceil((arrayX.length - 1) / 2 + lowVal);
+	  while( !(arrayX[index] >= xTest && arrayX[index - 1] <= xTest) ) {
+		if (arrayX[index] > xTest) {
 			highVal = index;
 		} else {
 			lowVal = index;
@@ -431,34 +429,34 @@ function interp1(array_X, array_Y, X_test) {
 		index = Math.ceil((highVal - lowVal)/2 + lowVal);
 		
 		/*
-		// not sure if needed, but for small intervals I was worried that index and highval would be equal when binary
+		// not sure if needed, but for small intervals I was worried that index and highVal would be equal when binary
 		if (index == highVal) { index-- }; 
 		*/
 	  }
 	  
 	  /*
 	  // Old search algorithm  - less efficient for large datasets but simpler code
-	  for (index = 0; array_X[index] <= X_test; index++) {};
+	  for (index = 0; arrayX[index] <= xTest; index++) {};
 	  */
 	  
 	  // Small correction for boundary conditions. If index is 0 or 1 past end
-	  // of array, input X_test may be right at the boundary of the domain defined
-	  // by array_X, but index value will be past the range of acceptable values for
+	  // of array, input xTest may be right at the boundary of the domain defined
+	  // by arrayX, but index value will be past the range of acceptable values for
 	  // the algorithm. We want to make sure the interpolation function works with 
 	  // these values as well.
 	  if (index == 0) index++;
-	  if (index == array_X.length) index--;
+	  if (index == arrayX.length) index--;
 	  
 	  // Interpolation formula. index defines high valued reference data point, and index - 1 
 	  // defines low valued reference data point.
-	  Y_result = ((X_test - array_X[index - 1])/(array_X[index] - array_X[index - 1])) * 
-		  (array_Y[index] - array_Y[index - 1]) + array_Y[index - 1];
+	  yResult = ((xTest - arrayX[index - 1])/(arrayX[index] - arrayX[index - 1])) * 
+		  (arrayY[index] - arrayY[index - 1]) + arrayY[index - 1];
 		  
   } else {
 	console.log("WARNING: Invalid inputs into interp1 function");
   }
 
-  return Y_result;
+  return yResult;
 }
 
 }// END OF MAIN WEBPAGE SCRIPT and NRELWebFat_Line Function Call
