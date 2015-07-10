@@ -98,6 +98,12 @@ noscript {
 <!-- Main WebPage Script -->
 <script>
 
+
+// Put graphing script into function call to limit variable scopes.
+NRELWebFat_Line();
+function NRELWebFat_Line() {
+
+
 // AJAX CALL FOR DATA DOWNLOAD, AND ADDING DATA INTO THE CHART:
 // While the data is downloading, the next block of code after the d3.csv command will 
 // execute.  Then, when all data has downloaded, the code inside the function passed 
@@ -290,7 +296,8 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
 
 
 // THIS SECTION INITIALIZES VARIABLES THAT DEFINE THE CHART:
-// This runs immediately after the data download in d3.csv begins
+// This runs immediately after the data download in d3.csv begins, 
+// and before any code within the d3.csv asynchronous call begins.
 
 // Defines chart dimensions
 var margin = {top: 10, right: 150, bottom: 135, left: 70},
@@ -378,8 +385,11 @@ function interp1(array_X, array_Y, X_test) {
   // data points in array_X, and then calculates the corresponding
   // Y_result based on linear interpolation in array_Y.
   
-  // Initialize output variable
-  Y_result = NaN;
+  // Initialize function variables
+  var Y_result = NaN; // output value
+  var errorFlag = false; // flag that indicates invalid input values  
+  var highVal, lowVal, index;
+  
   
   // CHECK THAT INPUTS ARE VALID:
   error_flag = false;
@@ -409,9 +419,9 @@ function interp1(array_X, array_Y, X_test) {
 	  // points X_test is between. Find index of this location.
 
 	  // Binary search algorithm to locate which data points X_in is located between
-	  var highVal = array_X.length - 1;
-	  var lowVal = 0;
-	  var index = Math.ceil((array_X.length - 1) / 2 + lowVal);
+	  highVal = array_X.length - 1;
+	  lowVal = 0;
+	  index = Math.ceil((array_X.length - 1) / 2 + lowVal);
 	  while( !(array_X[index] >= X_test && array_X[index - 1] <= X_test) ) {
 		if (array_X[index] > X_test) {
 			highVal = index;
@@ -427,7 +437,7 @@ function interp1(array_X, array_Y, X_test) {
 	  }
 	  
 	  /*
-	  // Old search algorithm
+	  // Old search algorithm  - less efficient for large datasets but simpler code
 	  for (index = 0; array_X[index] <= X_test; index++) {};
 	  */
 	  
@@ -451,13 +461,8 @@ function interp1(array_X, array_Y, X_test) {
   return Y_result;
 }
 
-// super radical change
-/*
-even more radical changes
-...
-*/
+}// END OF MAIN WEBPAGE SCRIPT and NRELWebFat_Line Function Call
 
-// END OF MAIN WEBPAGE SCRIPT
 </script>
 
 </body>
