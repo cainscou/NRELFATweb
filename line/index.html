@@ -27,9 +27,9 @@ svg {
 }
 
 .area {
-  opacity: 0.9;
-  clip-path: url(#clip);
   fill: steelblue;
+  clip-path: url(#clip);
+  opacity: 0.9;
 }
 
 .line {
@@ -129,10 +129,8 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
 			scaling objects.
 	lineColor: Specifies CSS attribute to define the color of the line in the upper chart.
 	areaColor: Specifies CSS attribute to define the color of area in the lower chart where the time range can
-			be filtered.
-				
-  */
-		
+			be filtered.			
+  */		
   var lines = [
 
 	// #line1 info - No incentives data
@@ -184,7 +182,7 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
   y2.domain(y.domain());
 	  
   // Draw the data curve lines into the main upper chart
-  d3.select(".focus").selectAll("path")
+  d3.select("#focus").selectAll("path")
 		.data(lines)
 	.enter().append("path")
 		.attr("class", "line")
@@ -195,7 +193,7 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
 		;
 	  
   // Add text labels to each data line
-  d3.select(".focus").selectAll("text")
+  d3.select("#focus").selectAll("text")
 		.data(lines)
 	.enter().append("text")
 		.attr("class", "dataLabel")
@@ -229,7 +227,7 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
       .call(yAxis);
 
   // Draw the data curves into the lower sub chart with brush filter
-  d3.select(".context").selectAll(".area")
+  d3.select("#context").selectAll(".area")
 		.data(lines)
 	.enter().append("path")
 		.attr("class", "area")
@@ -266,7 +264,7 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
 	  x.domain(brush.empty() ? x2.domain() : brush.extent());
 	  
 	  // update lines on chart based on new x domain. (note: x domain is built into line definition).
-		d3.select(".focus").selectAll("path")
+		d3.select("#focus").selectAll("path")
 			.data(lines)
 			.attr("d", function(d) { return d.lineDef(data); } )
 			.datum(data)
@@ -274,7 +272,7 @@ d3.csv("cdp8_condensed.csv", type, function(error, data) {
 	  
 	  // Update line text labels based on new x domain. The interp1 function is used so text labels follow 
 	  // the end of their corresponding line as it moves based on the data range.
-	  d3.select(".focus").selectAll(".dataLabel")
+	  d3.select("#focus").selectAll(".dataLabel")
 			.data(lines)
 			.attr("y",  function(d) { return y(interp1(data.map(function(d) { return d.year; }), 
 				d.yData, x.domain()[1])); });
@@ -317,8 +315,8 @@ var x = d3.time.scale().range([0, width]),
 var xAxis = d3.svg.axis().scale(x).orient("bottom"),
     xAxis2 = d3.svg.axis().scale(x2).orient("bottom"),
     yAxis = d3.svg.axis().scale(y).orient("left");
-
-
+	
+	
 	
 // THIS SECTION BEGINS CONSTRUCTING A SKELETON FOR THE CHART:
 // The skeleton will be filled in once the rest of the data loads.
@@ -337,12 +335,14 @@ svg.append("defs").append("clipPath")
 
 // Append g tag to define main chart area
 var focus = svg.append("g")
-    .attr("class", "focus")
+    .attr("class", "chart")
+	.attr("id", "focus")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 // Append g tag to define lower sub chart chart with filters.
 var context = svg.append("g")
-    .attr("class", "context")
+    .attr("class", "chart")
+	.attr("id", "context")
     .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
 // Append label to x-axis	
@@ -386,7 +386,8 @@ function interp1(arrayX, arrayY, xTest) {
   // Initialize function variables
   var yResult = NaN; // output value
   var errorFlag = false; // flag that indicates invalid input values  
-  var highVal, lowVal, index;
+  var highVal, lowVal, index; //tracking variables for binary search algorithm
+  var floatError = Math.abs(arrayX[arrayX.length - 1] - arrayX[0])/100000;
   
   
   // CHECK THAT INPUTS ARE VALID:
@@ -408,7 +409,7 @@ function interp1(arrayX, arrayY, xTest) {
 	  
 	  // Check if xTest is within the range of arrayX.  This function is only designed to perform data point,
 	  // interpolation. It does not extrapolate data points!
-	  if (!errorFlag && (xTest + 0.00001 < arrayX[0] || xTest - 0.00001 > arrayX[arrayX.length - 1] )) errorFlag = true ;
+	  if (!errorFlag && (xTest + floatError < arrayX[0] || xTest - floatError > arrayX[arrayX.length - 1] )) errorFlag = true ;
   }
   
   // IF INPUTS ARE GOOD, CALCULATE RESULTS:
