@@ -117,7 +117,9 @@ var costPerKwNI = crossfilterData.dimension( function (d) { return d.cost_per_kW
 var year = crossfilterData.dimension( function (d) { return d.year; });
 var yearGroup = year.group();
 var costPerKwNI_sumByYear = year.group().reduceSum(function (d) { return d.cost_per_kW_NI; } ).all();
-var costPerKwNI_countByYear = year.group().reduceCount().all();
+var dataPointsPerYear = year.group().reduceCount().all();
+var costPerKwIncentive_sumByYear = year.group().reduceSum(function (d) { return d.cost_per_kW_Incentive; } ).all();
+
 
   // DEFINE EACH LINE TO BE DRAWN ON THE CHART IN THE DATA STRUCTURE BELOW. 
   // Each line is an object in the array. This is in JSON format.
@@ -148,33 +150,35 @@ var costPerKwNI_countByYear = year.group().reduceCount().all();
 	{
 	"lineDef": d3.svg.line()
 					.x(function(d, i) { return x(yearGroup.all()[i].key); })
-					.y(function(d, i) { return y(costPerKwNI_sumByYear[i].value/costPerKwNI_countByYear[i].value); }),
-	"yData": year.group().all().map(function(d, i) { return costPerKwNI_sumByYear[i].value/costPerKwNI_countByYear[i].value; }),
+					.y(function(d, i) { return y(costPerKwNI_sumByYear[i].value/dataPointsPerYear[i].value); }),
+	"yData": year.group().all().map(function(d, i) { return costPerKwNI_sumByYear[i].value/dataPointsPerYear[i].value; }),
 	"textLabel": 'No Incentive',
 	"lineColor": "steelblue",
 	
 	"areaDef": d3.svg.area()
 					.interpolate("monotone")
-					.x(function(d) { return x2(d.year); })
+					.x(function(d, i) { return x2(yearGroup.all()[i].key); })
 					.y0(height2)
-					.y1(function(d) { return y2(d.cost_per_kW_NI); }),
+					.y1(function(d, i) { return y2(costPerKwNI_sumByYear[i].value/dataPointsPerYear[i].value); }),
 	"areaColor": "steelblue"
 	},
 		
 	// #line2 info - With incentives data
 	{
 	"lineDef": d3.svg.line()
-					.x(function(d) { return x(d.year); })
-					.y(function(d) { return y(d.cost_per_kW_Incentive); }),
-	"yData": year.group().all().map(function(d) { return d.cost_per_kW_Incentive; }), 
+					.x(function(d, i) { return x(yearGroup.all()[i].key); })
+					.y(function(d, i) { return y(costPerKwIncentive_sumByYear[i].value/dataPointsPerYear[i].value); }),
+					
+	"yData": year.group().all().map(function(d, i) 
+		{ return costPerKwIncentive_sumByYear[i].value/dataPointsPerYear[i].value; }),
 	"textLabel": 'With Incentive',
 	"lineColor": "red",
 	
 	"areaDef": d3.svg.area()
 					.interpolate("monotone")
-					.x(function(d) { return x2(d.year); })
+					.x(function(d, i) { return x2(yearGroup.all()[i].key); })
 					.y0(height2)
-					.y1(function(d) { return y2(d.cost_per_kW_Incentive); }),
+					.y1(function(d, i) { return y2(costPerKwIncentive_sumByYear[i].value/dataPointsPerYear[i].value); }),
 	"areaColor": "firebrick"
 	}
 	
@@ -243,9 +247,9 @@ var costPerKwNI_countByYear = year.group().reduceCount().all();
 	.enter().append("path")
 		.attr("class", "area")
 		.attr("id", function(d, i) { return "area" + (i + 1);} )
-		.attr("d", function(d) { return d.areaDef(data); } )
+		.attr("d", function(d) { return d.areaDef(yearGroup.all()); } )
 		.attr("style", function(d) { return "stroke: " + d.areaColor + "; fill: " + d.areaColor + ";" ;})
-		.datum(data)
+		.datum(yearGroup.all())
 		; 
 
   // Draw the x-axis onto the lower sub chart with brush filters
@@ -277,8 +281,8 @@ var costPerKwNI_countByYear = year.group().reduceCount().all();
 	  // update lines on chart based on new x domain. (note: x domain is built into line definition).
 		d3.select("#focus").selectAll("path")
 			.data(lines)
-			.attr("d", function(d) { return d.lineDef(data); } )
-			.datum(data)
+			.attr("d", function(d) { return d.lineDef(yearGroup.all()); } )
+			.datum(yearGroup.all())
 			;
 	  
 	  // Update line text labels based on new x domain. The interp1 function is used so text labels follow 
