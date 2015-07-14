@@ -94,6 +94,8 @@ noscript {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 <!-- Load JQuery - Not currently in use -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<!-- Load Crossfilter -->
+<script src="../lib/crossfilter.v1.min.js"></script>
 
 <!-- Main WebPage Script -->
 <script>
@@ -106,7 +108,15 @@ function NRELWebFat_Line() {
 // While the data is downloading, the next block of code after the d3.csv command will 
 // execute.  Then, when all data has downloaded, the code inside the function passed 
 // as an argument to d3.csv will execute.
-d3.csv("cdp8_condensed.csv", type, function(error, data) {
+d3.csv("cdp8_modifiedHeaders.csv", type, function(error, data) {
+
+// set up crossfilter
+var crossfilterData = crossfilter(data);
+var costPerKwNI = crossfilterData.dimension( function (d) { return d.cost_per_kW_NI; } );
+var year = crossfilterData.dimension( function (d) { return d.year; });
+var yearGroup = year.group();
+var costPerKwNI_sumByYear = yearGroup.reduceSum(function (d) { return d.cost_per_kW_NI } ).all();
+var costPerKwNI_countByYear = yearGroup.reduceCount().all();
 
   // DEFINE EACH LINE TO BE DRAWN ON THE CHART IN THE DATA STRUCTURE BELOW. 
   // Each line is an object in the array. This is in JSON format.
@@ -459,6 +469,7 @@ function interp1(arrayX, arrayY, xTest) {
 
   return yResult;
 }
+
 
 }// END OF MAIN WEBPAGE SCRIPT and NRELWebFat_Line Function Call
 
