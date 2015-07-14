@@ -112,11 +112,12 @@ d3.csv("cdp8_modifiedHeaders.csv", type, function(error, data) {
 
 // set up crossfilter
 var crossfilterData = crossfilter(data);
+var all = crossfilterData.groupAll();
 var costPerKwNI = crossfilterData.dimension( function (d) { return d.cost_per_kW_NI; } );
 var year = crossfilterData.dimension( function (d) { return d.year; });
 var yearGroup = year.group();
-var costPerKwNI_sumByYear = yearGroup.reduceSum(function (d) { return d.cost_per_kW_NI } ).all();
-var costPerKwNI_countByYear = yearGroup.reduceCount().all();
+var costPerKwNI_sumByYear = year.group().reduceSum(function (d) { return d.cost_per_kW_NI; } ).all();
+var costPerKwNI_countByYear = year.group().reduceCount().all();
 
   // DEFINE EACH LINE TO BE DRAWN ON THE CHART IN THE DATA STRUCTURE BELOW. 
   // Each line is an object in the array. This is in JSON format.
@@ -146,9 +147,9 @@ var costPerKwNI_countByYear = yearGroup.reduceCount().all();
 	// #line1 info - No incentives data
 	{
 	"lineDef": d3.svg.line()
-					.x(function(d) { return x(d.year); })
-					.y(function(d) { return y(d.cost_per_kW_NI); }),
-	"yData": data.map(function(d) { return d.cost_per_kW_NI; }),
+					.x(function(d, i) { return x(yearGroup.all()[i].key); })
+					.y(function(d, i) { return y(costPerKwNI_sumByYear[i].value/costPerKwNI_countByYear[i].value); }),
+	"yData": year.group().all().map(function(d, i) { return costPerKwNI_sumByYear[i].value/costPerKwNI_countByYear[i].value; }),
 	"textLabel": 'No Incentive',
 	"lineColor": "steelblue",
 	
@@ -165,7 +166,7 @@ var costPerKwNI_countByYear = yearGroup.reduceCount().all();
 	"lineDef": d3.svg.line()
 					.x(function(d) { return x(d.year); })
 					.y(function(d) { return y(d.cost_per_kW_Incentive); }),
-	"yData": data.map(function(d) { return d.cost_per_kW_Incentive; }), 
+	"yData": year.group().all().map(function(d) { return d.cost_per_kW_Incentive; }), 
 	"textLabel": 'With Incentive',
 	"lineColor": "red",
 	
@@ -197,9 +198,9 @@ var costPerKwNI_countByYear = yearGroup.reduceCount().all();
 	.enter().append("path")
 		.attr("class", "line")
 		.attr("id", function(d, i) { return "line" + (i + 1);} )
-		.attr("d", function(d) { return d.lineDef(data); } )
+		.attr("d", function(d) { return d.lineDef(yearGroup.all()); } )
 		.attr("style", function(d) { return "stroke: " + d.lineColor + ";" ;})
-		.datum(data)
+		.datum(yearGroup.all())
 		;
 	  
   // Add text labels to each data line
