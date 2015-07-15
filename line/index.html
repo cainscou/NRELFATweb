@@ -3,7 +3,7 @@
 <head>
 
 <meta charset="UTF-8" />
-<title>NREL Line Graph Sample</title>
+<title>dc test - NREL Line Graph Sample</title>
 
 <meta name="keywords" content="Hydrogen, Fuel Cell, Fuel Cells, National Renewable
     Energy Lab, NREL, U.S. Department of Energy, DOE, Renewable Energy,
@@ -24,41 +24,6 @@
 <!-- Local Styles for this WebPage -->
 <style>
 
-svg {
-  font: 10px sans-serif;
-}
-
-.area {
-  fill: steelblue;
-  clip-path: url(#clip);
-  opacity: 0.9;
-}
-
-.line {
-  fill: none;
-  stroke: steelblue;
-  stroke-width: 1.5px;
-  clip-path: url(#clip);
-  opacity: 0.9;
-}
-
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-.axisLabel {
-  font-size: 1.3em;
-  
-}
-
-.brush .extent {
-  stroke: #fff;
-  fill-opacity: .125;
-  shape-rendering: crispEdges;
-}
 
 noscript {
   font-size:150%;
@@ -73,9 +38,9 @@ noscript {
 
 <!-- WEBPAGE HTML AND TEXT INFORMATION -->
 <!-- Information displayed above the charts -->
-<h2>Average $2010/kW Trend for Overall Deployments</h2>
+<h2>Number of Stations Constructed per year</h2>
 
-<p>This graph represents the average cost per kilowatt of Fuel Cell deployments across the country</p>
+<p>This graph represents the number of Hydrogen Fuelling stations constructed across the country</p>
 
 <p><b>Instructions for Interactive Graphics:</b> <br /> <i> Click and drag on the lower graph to select the data range for the upper graph. <br /> This allows you to apply your own custom data filters and criteria!</i></p>
 
@@ -87,18 +52,17 @@ noscript {
 		  Scripts must be enabled to see the interactive data visualizations on this page. <hr /> </noscript>
 			   
 <!-- D3 CHART LOCATION - D3 APPENDS CHART ELEMENTS INTO THIS DIV -->
-<div id="charts"></div>
+<div id="lineChart"></div>
+<div id="barChart"></div>
 
 
 <!-- WEBAGE JAVASCRIPTS -->
 
-<!-- Load the d3 Library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+
 <!-- Load JQuery - Not currently in use -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<!-- Load Crossfilter -->
-<script src="../lib/crossfilter.v1.min.js"></script>
-
+<script type="text/javascript" src="crossfilter.js"></script>
+<script type="text/javascript" src="d3.js"></script>
 <script type="text/javascript" src="dc.js"></script>
 
 <!-- Main WebPage Script -->
@@ -114,15 +78,60 @@ function NRELWebFat_Line() {
 // as an argument to d3.csv will execute.
 d3.csv("cdp8_modifiedHeaders.csv", type, function(error, data) {
 
-// set up crossfilter
-var crossfilterData = crossfilter(data);
-var all = crossfilterData.groupAll();
-var costPerKwNI = crossfilterData.dimension( function (d) { return d.cost_per_kW_NI; } );
-var year = crossfilterData.dimension( function (d) { return d.year; });
-var yearGroup = year.group();
-var costPerKwNI_sumByYear = year.group().reduceSum(function (d) { return d.cost_per_kW_NI; } ).all();
-var dataPointsPerYear = year.group().reduceCount().all();
-var costPerKwIncentive_sumByYear = year.group().reduceSum(function (d) { return d.cost_per_kW_Incentive; } ).all();
+
+  // Defines some error handling if data file can not be loaded.
+  if (error) { 
+    d3.select("#charts").append("p").append("b")
+    .text("The data file to produce interactive graphics could not be loaded."); 
+    throw error;
+  }
+  
+  // defines the domain of the data on each chart scale
+  x.domain(d3.extent(data.map(function(d) { return d.year; })));
+  y.domain([0, d3.max(data.map(function(d) { return d.cost_per_kW_NI; }))]);
+  x2.domain(x.domain());
+  y2.domain(y.domain());
+  
+  
+	// set up crossfilter
+	var crossfilterData = crossfilter(data);
+	var all = crossfilterData.groupAll();
+	var costPerKwNI = crossfilterData.dimension( function (d) { return d.cost_per_kW_NI; } );
+	var year = crossfilterData.dimension( function (d) { return d.year; });
+	var yearGroup = year.group();
+	var minDate = new Date(2002, 00, 01);
+	var maxDate = new Date(2014, 00, 01);
+	
+	var costPerKwNI_sumByYear = year.group().reduceSum(function (d) { return d.cost_per_kW_NI; } );
+	var dataPointsPerYear = year.group().reduceCount();
+	var costPerKwIncentive_sumByYear = year.group().reduceSum(function (d) { return d.cost_per_kW_Incentive; } );
+
+	// Set up dc charts
+	// var lineComposite = dc.compositeChart("#lineChart");
+	var line1 = dc.lineChart("#lineChart")
+					.dimension(year)
+					.colors('red')
+					.group(dataPointsPerYear, "Stations Installed");
+	/* var line2 = dc.lineChart(lineComposite)
+					.dimension(year)
+					.colors('blue')
+					.group(costPerKwIncentive_sumByYear, "With Incentive");  */
+					
+	line1
+		.width(width)
+		.height(height)
+		.x(d3.time.scale().domain([minDate,maxDate]))
+		.yAxisLabel("Stations Constructed Per Year")
+		.xAxisLabel("Year")
+		.legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
+		.renderHorizontalGridLines(true);
+		/*
+	dc.barChart("#barChart")
+		.width(width)
+		.height(height)
+		*/
+		
+		dc.renderAll();
 
 
   // DEFINE EACH LINE TO BE DRAWN ON THE CHART IN THE DATA STRUCTURE BELOW. 
@@ -191,17 +200,7 @@ var costPerKwIncentive_sumByYear = year.group().reduceSum(function (d) { return 
   ];
   */
 
-  // Defines some error handling if data file can not be loaded.
-  if (error) { 
-    d3.select("#charts").append("p").append("b")
-    .text("The data file to produce interactive graphics could not be loaded."); 
-    throw error;
-  }
-  // defines the domain of the data on each chart scale
-  x.domain(d3.extent(data.map(function(d) { return d.year; })));
-  y.domain([0, d3.max(data.map(function(d) { return d.cost_per_kW_NI; }))]);
-  x2.domain(x.domain());
-  y2.domain(y.domain());
+
 	  
 	  /*
   // Draw the data curve lines into the main upper chart
@@ -236,9 +235,9 @@ var margin = {top: 10, right: 150, bottom: 135, left: 70},
 var parseDate = d3.time.format("%Y").parse;
 
 // Define d3 scales for the chart axes.
-var x = d3.time.scale().range([0, width]),
+var x = d3.time.scale(),
     x2 = d3.time.scale().range([0, width]),
-    y = d3.scale.linear().range([height, 0]),
+    y = d3.scale.linear(),
     y2 = d3.scale.linear().range([height2, 0]);
 
 // Define d3 functions that construct chart axes.
