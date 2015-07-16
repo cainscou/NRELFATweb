@@ -16,9 +16,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.js"></script>
 <![endif
 
-<!-- MAIN NREL STYLESHEET -->
+<!-- STYLESHEETS -->
 <link rel="stylesheet" type="text/css" href="http://www.nrel.gov/includes/nrel.css" />
-
 <link rel="stylesheet" type="text/css" href="dc.css" />
 
 <!-- Local Styles for this WebPage -->
@@ -51,15 +50,12 @@ noscript {
 <noscript><br />Sorry, JavaScript is either not enabled, or is not supported by your web browser.  <br />
 		  Scripts must be enabled to see the interactive data visualizations on this page. <hr /> </noscript>
 			   
-<!-- D3 CHART LOCATION - D3 APPENDS CHART ELEMENTS INTO THIS DIV -->
+<!-- DC CHART LOCATION - DC APPENDS CHART ELEMENTS INTO THESE DIVS -->
 <div id="lineChart"></div>
 <div id="barChart"></div>
 
 
-<!-- WEBAGE JAVASCRIPTS -->
-
-
-<!-- Load JQuery - Not currently in use -->
+<!-- WEBAGE JAVASCRIPT LIBRARIES -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script type="text/javascript" src="crossfilter.js"></script>
 <script type="text/javascript" src="d3.js"></script>
@@ -69,15 +65,13 @@ noscript {
 <script>
 
 // Put graphing script into function call to limit variable scopes.
-NRELWebFat_Line();
-function NRELWebFat_Line() {
+(function() {
 
 // AJAX CALL FOR DATA DOWNLOAD, AND ADDING DATA INTO THE CHART:
 // While the data is downloading, the next block of code after the d3.csv command will 
 // execute.  Then, when all data has downloaded, the code inside the function passed 
 // as an argument to d3.csv will execute.
 d3.csv("cdp8_modifiedHeaders.csv", type, function(error, data) {
-
 
   // Defines some error handling if data file can not be loaded.
   if (error) { 
@@ -86,145 +80,57 @@ d3.csv("cdp8_modifiedHeaders.csv", type, function(error, data) {
     throw error;
   }
   
-  // defines the domain of the data on each chart scale
-  x.domain(d3.extent(data.map(function(d) { return d.year; })));
-  y.domain([0, d3.max(data.map(function(d) { return d.cost_per_kW_NI; }))]);
-  x2.domain(x.domain());
-  y2.domain(y.domain());
-  
-  
-	// set up crossfilter
+	// set up crossfilters
 	var crossfilterData = crossfilter(data);
+
+	/*
 	var all = crossfilterData.groupAll();
 	var costPerKwNI = crossfilterData.dimension( function (d) { return d.cost_per_kW_NI; } );
+	var costPerKwNI_sumByYear = year.group().reduceSum(function (d) { return d.cost_per_kW_NI; } );
+	var costPerKwIncentive_sumByYear = year.group().reduceSum(function (d) { return d.cost_per_kW_Incentive; } );
+	*/
+	
+	// Define Line Chart
 	var year = crossfilterData.dimension( function (d) { return d.year; });
-	var yearGroup = year.group();
 	var minDate = new Date(2002, 00, 01);
 	var maxDate = new Date(2014, 00, 01);
-	
-	var costPerKwNI_sumByYear = year.group().reduceSum(function (d) { return d.cost_per_kW_NI; } );
 	var dataPointsPerYear = year.group().reduceCount();
-	var costPerKwIncentive_sumByYear = year.group().reduceSum(function (d) { return d.cost_per_kW_Incentive; } );
-
-	// Set up dc charts
-	// var lineComposite = dc.compositeChart("#lineChart");
 	var line1 = dc.lineChart("#lineChart")
 					.dimension(year)
 					.colors('red')
-					.group(dataPointsPerYear, "Stations Installed");
+					.group(dataPointsPerYear, "Number of Stations Constructed")
+					.width(width)
+					.height(height)
+					.x(d3.time.scale().domain([minDate,maxDate]))
+					.yAxisLabel("Number of Stations Constructed")
+					.xAxisLabel("Year")
+					.legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
+					.renderHorizontalGridLines(true);
 	/* var line2 = dc.lineChart(lineComposite)
 					.dimension(year)
 					.colors('blue')
-					.group(costPerKwIncentive_sumByYear, "With Incentive");  */
-					
-	line1
-		.width(width)
-		.height(height)
-		.x(d3.time.scale().domain([minDate,maxDate]))
-		.yAxisLabel("Stations Constructed Per Year")
-		.xAxisLabel("Year")
-		.legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
-		.renderHorizontalGridLines(true);
+					.group(costPerKwIncentive_sumByYear, "With Incentive");  */	
 	
+	
+	// Define Bar Chart
 	var binSize = 500;
+	var minCapacity = 0;
+	var maxCapacity = 5000;
 	var capacity = crossfilterData.dimension( function (d) { return d.capacity_kW; } );
-	var capacityCountByBinsize = capacity.group( function(d) { return d; } );
+	var capacityCountByBinsize = capacity.group( function(d) { return Math.floor(d/binSize)*binSize; } );
+	var bar1 = 	dc.barChart("#barChart")
+					.width(width)
+					.height(height)
+					.x(d3.scale.linear().domain([minCapacity, maxCapacity]))
+					.dimension(capacity)
+					.group(capacityCountByBinsize)
+					.xUnits(dc.units.fp.precision(binSize))
+					.yAxisLabel("Number of Stations Constructed")
+					.xAxisLabel("Capacity (kW)");
+
 	
-	dc.barChart("#barChart")
-		.width(width)
-		.height(height)
-		.x(d3.scale.linear().domain([0, 5000]))
-		.dimension(capacity)
-		.group(capacityCountByBinsize)
-		//.xUnits(dc.units.fp.precision(binSize))
-		.yAxisLabel("Number of Stations Constructed")
-		.xAxisLabel("Capacity (kW)");
-		
-	dc.renderAll();
-
-
-  // DEFINE EACH LINE TO BE DRAWN ON THE CHART IN THE DATA STRUCTURE BELOW. 
-  // Each line is an object in the array. This is in JSON format.
-  /*
-  Here is a DESCRIPTION of the different items in each line definition object:
-	lineDef: This is where you define a d3.svg.line() object. See d3 documentation
-			for more information. You need to call the .x and .y methods to define
-			the data associated with the line. Use the format in the template as an example.
-			Note: .x and .y are passed a function that accesses the data (data is passed
-			to the line object later, this just defines what to do with the data when the 
-			object is used. Within the function, the variables x and y are not the same as .x and .y.
-			x and y refer to the d3 axis scaling objects previously defined.
-	textLabel: This is just a text string that will be appended to each line on the chart to label the data.
-	yData: This is a vector that specifies the y value data for the line (it is assumed x-value data is the same for
-			all lines, so x data is defined in another location.). Some functionality later in the script need
-			reference of what the y-data points associated with a line are.
-	areaDef: This is where you define a d3.svg.area() object that draws the area curves on the lower subcharts.
-			This lower chart is also where brushes are used to filter the graph based on time ranges.
-			A similar process is used as in lineDef to define x and y data, except x2 and y2 are used for the d3 axis 
-			scaling objects.
-	lineColor: Specifies CSS attribute to define the color of the line in the upper chart.
-	areaColor: Specifies CSS attribute to define the color of area in the lower chart where the time range can
-			be filtered.			
-  */	
-
-/*  
-  var lines = [
-
-	// #line1 info - No incentives data
-	{
-	"lineDef": d3.svg.line()
-					.x(function(d, i) { return x(yearGroup.all()[i].key); })
-					.y(function(d, i) { return y(costPerKwNI_sumByYear[i].value/dataPointsPerYear[i].value); }),
-	"yData": year.group().all().map(function(d, i) { return costPerKwNI_sumByYear[i].value/dataPointsPerYear[i].value; }),
-	"textLabel": 'No Incentive',
-	"lineColor": "steelblue",
-	
-	"areaDef": d3.svg.area()
-					.interpolate("monotone")
-					.x(function(d, i) { return x2(yearGroup.all()[i].key); })
-					.y0(height2)
-					.y1(function(d, i) { return y2(costPerKwNI_sumByYear[i].value/dataPointsPerYear[i].value); }),
-	"areaColor": "steelblue"
-	},
-		
-	// #line2 info - With incentives data
-	{
-	"lineDef": d3.svg.line()
-					.x(function(d, i) { return x(yearGroup.all()[i].key); })
-					.y(function(d, i) { return y(costPerKwIncentive_sumByYear[i].value/dataPointsPerYear[i].value); }),
-					
-	"yData": year.group().all().map(function(d, i) 
-		{ return costPerKwIncentive_sumByYear[i].value/dataPointsPerYear[i].value; }),
-	"textLabel": 'With Incentive',
-	"lineColor": "red",
-	
-	"areaDef": d3.svg.area()
-					.interpolate("monotone")
-					.x(function(d, i) { return x2(yearGroup.all()[i].key); })
-					.y0(height2)
-					.y1(function(d, i) { return y2(costPerKwIncentive_sumByYear[i].value/dataPointsPerYear[i].value); }),
-	"areaColor": "firebrick"
-	}
-	
-  ];
-  */
-
-
-	  
-	  /*
-  // Draw the data curve lines into the main upper chart
-  d3.select("#focus").selectAll("path")
-		.data(lines)
-	.enter().append("path")
-		.attr("class", "line")
-		.attr("id", function(d, i) { return "line" + (i + 1);} )
-		.attr("d", function(d) { return d.lineDef(yearGroup.all()); } )
-		.attr("style", function(d) { return "stroke: " + d.lineColor + ";" ;})
-		.datum(yearGroup.all())
-		;
-	 */ 
-
-
+	// Render Everything
+	line1; bar1; dc.renderAll();
 
 }); // end of d3.csv asynchronous call
 
@@ -242,19 +148,7 @@ var margin = {top: 10, right: 150, bottom: 135, left: 70},
 
 // Defines function to convert timestamps into JavaScript date format
 var parseDate = d3.time.format("%Y").parse;
-
-// Define d3 scales for the chart axes.
-var x = d3.time.scale(),
-    x2 = d3.time.scale().range([0, width]),
-    y = d3.scale.linear(),
-    y2 = d3.scale.linear().range([height2, 0]);
-
-// Define d3 functions that construct chart axes.
-var xAxis = d3.svg.axis().scale(x).orient("bottom"),
-    xAxis2 = d3.svg.axis().scale(x2).orient("bottom"),
-    yAxis = d3.svg.axis().scale(y).orient("left");
 	
-
 
 // SUB-FUNCTION DEFINITIONS:
 
@@ -264,11 +158,14 @@ function type(d) {
   d.year = parseDate(d.year);
   d.cost_per_kW_NI = +d.cost_per_kW_NI;
   d.cost_per_kW_Incentive = +d.cost_per_kW_Incentive;
+  d.capacity_kW = +d.capacity_kW;
+  d.Cost_dollars = +d.Cost_dollars;
+  d.Cost_dollars_with_incentive = +d.Cost_dollars_with_incentive;
   return d;
 }
 
 
-}// END OF MAIN WEBPAGE SCRIPT and NRELWebFat_Line Function Call
+})()// END OF MAIN WEBPAGE SCRIPT and NRELWebFat_Line Function Call
 
 </script>
 
