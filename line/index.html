@@ -125,13 +125,22 @@ d3.csv("cdp8_modifiedHeaders.csv", type, function(error, data) {
 		.xAxisLabel("Year")
 		.legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
 		.renderHorizontalGridLines(true);
-		/*
+	
+	var binSize = 500;
+	var capacity = crossfilterData.dimension( function (d) { return d.capacity_kW; } );
+	var capacityCountByBinsize = capacity.group( function(d) { return d; } );
+	
 	dc.barChart("#barChart")
 		.width(width)
 		.height(height)
-		*/
+		.x(d3.scale.linear().domain([0, 5000]))
+		.dimension(capacity)
+		.group(capacityCountByBinsize)
+		//.xUnits(dc.units.fp.precision(binSize))
+		.yAxisLabel("Number of Stations Constructed")
+		.xAxisLabel("Capacity (kW)");
 		
-		dc.renderAll();
+	dc.renderAll();
 
 
   // DEFINE EACH LINE TO BE DRAWN ON THE CHART IN THE DATA STRUCTURE BELOW. 
@@ -227,8 +236,8 @@ d3.csv("cdp8_modifiedHeaders.csv", type, function(error, data) {
 // Defines chart dimensions
 var margin = {top: 10, right: 150, bottom: 135, left: 70},
     margin2 = {top: 430, right: 150, bottom: 60, left: 70},
-    width = 960 - margin.left - margin.right,
-    height = 540 - margin.top - margin.bottom,
+    width = 750 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom,
     height2 = 540 - margin2.top - margin2.bottom;
 
 // Defines function to convert timestamps into JavaScript date format
