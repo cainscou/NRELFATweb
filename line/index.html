@@ -37,9 +37,9 @@ noscript {
 
 <!-- WEBPAGE HTML AND TEXT INFORMATION -->
 <!-- Information displayed above the charts -->
-<h2>Number of Stations Constructed per year</h2>
+<h2>Number of Fuel Cells Installed per year</h2>
 
-<p>This graph represents the number of Hydrogen Fuelling stations constructed across the country</p>
+<p>This graph represents the number of Hydrogen Fuel Cells installed across the country</p>
 
 <p><b>Instructions for Interactive Graphics:</b> <br /> <i> Click and drag on the lower graph to select the data range for the upper graph. <br /> This allows you to apply your own custom data filters and criteria!</i></p>
 
@@ -53,6 +53,7 @@ noscript {
 <!-- DC CHART LOCATION - DC APPENDS CHART ELEMENTS INTO THESE DIVS -->
 <div id="lineChart"></div>
 <div id="barChart"></div>
+<div id="lineChart2"></div>
 
 
 <!-- WEBAGE JAVASCRIPT LIBRARIES -->
@@ -95,14 +96,15 @@ d3.csv("cdp8_modifiedHeaders.csv", type, function(error, data) {
 	var minDate = new Date(2002, 00, 01);
 	var maxDate = new Date(2014, 00, 01);
 	var dataPointsPerYear = year.group().reduceCount();
+	
 	var line1 = dc.lineChart("#lineChart")
 					.dimension(year)
 					.colors('red')
-					.group(dataPointsPerYear, "Number of Stations Constructed")
+					.group(dataPointsPerYear, "Number of Fuel Cells Installed")
 					.width(width)
 					.height(height)
 					.x(d3.time.scale().domain([minDate,maxDate]))
-					.yAxisLabel("Number of Stations Constructed")
+					.yAxisLabel("Number of Fuel Cells Installed")
 					.xAxisLabel("Year")
 					.legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
 					.renderHorizontalGridLines(true);
@@ -125,12 +127,50 @@ d3.csv("cdp8_modifiedHeaders.csv", type, function(error, data) {
 					.dimension(capacity)
 					.group(capacityCountByBinsize)
 					.xUnits(dc.units.fp.precision(binSize))
-					.yAxisLabel("Number of Stations Constructed")
+					.yAxisLabel("Number of Fuel Cells Installed")
 					.xAxisLabel("Capacity (kW)");
 
 	
+	// Define Line Chart 2 - Average $/kW
+		// TEST CODE
+	function reduceAdd(p, v) {
+		p.sum += v.cost_per_kW_NI;
+		p.count += 1;
+		p.avg = p.sum / p.count;
+		return p;
+	}
+	
+	function reduceRemove(p, v) {
+		p.sum -= v.cost_per_kW_NI;
+		p.count -= 1;
+		p.avg = p.sum / p.count;
+		return p;
+	}		
+	
+	function reduceInitial() {
+		return {
+			sum: 0,
+			count: 0,
+			avg: 0
+		};
+	}
+	
+	var customReduce = year.group().reduce(reduceAdd, reduceRemove, reduceInitial);
+	
+	var line2 = dc.lineChart("#lineChart2")
+				.dimension(year)
+				.colors('red')
+				.valueAccessor( function(d) { return d.value.avg; })
+				.group(customReduce, "Average ($2010)/kW No Incentive")
+				.width(width)
+				.height(height)
+				.x(d3.time.scale().domain([minDate,maxDate]))
+				.xAxisLabel("Year")
+				.legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
+					
+	
 	// Render Everything
-	line1; bar1; dc.renderAll();
+	line1; bar1; line2; dc.renderAll();
 
 }); // end of d3.csv asynchronous call
 
