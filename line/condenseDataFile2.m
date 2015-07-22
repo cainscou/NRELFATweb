@@ -52,7 +52,7 @@ plot(T3.year, T3.cost_per_kW_Incentive, 'r')
 % axis([2003 2011 0 20000])
 
 %% Export data
-writetable(T3, 'cdp8_condensed.csv');
+% writetable(T3, 'cdp8_condensed.csv');
 
 
 disp('Process Complete')
