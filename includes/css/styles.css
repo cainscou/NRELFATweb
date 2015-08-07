@@ -26,32 +26,10 @@ div.dc-chart {
     fill: #ccc;
 }
 
-.dc-chart .empty-chart .pie-slice path {
-    fill: #FFEEEE;
-    cursor: default;
-}
 
-.dc-chart .empty-chart .pie-slice {
-    cursor: default;
-}
 
-.dc-chart .pie-slice {
-    fill: white;
-    font-size: 12px;
-    cursor: pointer;
-}
 
-.dc-chart .pie-slice.external{
-    fill: black;
-}
 
-.dc-chart .pie-slice :hover {
-    fill-opacity: .8;
-}
-
-.dc-chart .pie-slice.highlight {
-    fill-opacity: .8;
-}
 
 .dc-chart .selected path {
     stroke-width: 3;
@@ -105,7 +83,7 @@ div.dc-chart {
 
 .dc-chart path.line {
     fill: none;
-    stroke-width: 1.5px;
+    stroke-width: 2px;
 }
 
 .dc-chart circle.dot {
@@ -119,7 +97,7 @@ div.dc-chart {
 }
 
 .dc-chart path.area {
-    fill-opacity: .3;
+    fill-opacity: .7;
     stroke: none;
 }
 
@@ -305,13 +283,6 @@ div.dc-chart {
     stroke: none;
 }
 
-.dc-chart .heatmap .box-group.deselected rect {
-    stroke: none;
-    fill-opacity: .5;
-    fill: #ccc;
-}
-
-.dc-chart .heatmap g.axis text {
-    pointer-events: all;
-    cursor: pointer;
+.dc-chart .tick {
+  text-align: middle;
 }
